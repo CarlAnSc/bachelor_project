@@ -10,24 +10,44 @@ from torchvision import transforms
 
 
 #@st.experimental_memo
+st.set_page_config(layout="wide")
+
 
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
             "15 Style", "16 Subcategory"]
 
+def imagesFormatter(filenames: list):
+    """The first three images being prototypical. The last being the image you want to illustrate."""
+    ROOT = 'App/Images/anno_imgs/'
+    col1, col2 = st.columns([3, 1], gap='large')
+    col1.image([Image.open(ROOT + filenames[0]),Image.open(ROOT + filenames[1]),Image.open(ROOT + filenames[2])], width=250, caption=['','Prototypical images',''])
+    col2.image(Image.open(ROOT + filenames[3]), width=250, caption='Example image')
+
+
 def main():
     st.markdown("# Introduction")
     st.sidebar.markdown("# Thank you for helping us!")
-    st.write("We thank you a lot for your help. It is important that you read the following carefully before starting labeling, such that the analysis can be of high quality.")
+    st.sidebar.markdown("# Thank you for helping us!")
+
+    st.write("We thank you a lot for your help! 🌟 It is important that you read the following carefully before starting labeling, such that the analysis can be of high quality.")
     st.markdown("## The metalabels")
-    st.write("The metalabels are extra labels for images of objects. These describe how the object and image differs from the a perfect image of the same object. The perfect images are called **Prototypical** images.")
-    st.write("There are 16 different metalabels, and an image can contain multiple of these, or maybe even none. The 16 metalabels are listed here:")
+    st.write("The metalabels are extra labels for images of objects. "
+                "These describe how the object and image differs from the a perfect image of the same object. "
+                "The perfect images are called **Prototypical** images. "
+                "There are 16 different metalabels, and an image can contain multiple of these, or maybe even none. "
+                 "The 16 metalabels are listed here:")
     st.write(f"#### {OPTIONS[0]} \n The object has a different pose or is placed in different location within the image.")
+    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
     st.write(f"#### {OPTIONS[1]} \n The object is visible only partially due to the camera field of view that did not contain the full object – e.g. cropped out.")
+    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
     st.write(f"#### {OPTIONS[2]} \n The object is occluded by another object present in the image.")
+    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
     st.write(f"#### {OPTIONS[3]} \n The object is occluded by a person or human body part – this might include objects manipulated by human hands.")
+    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
     st.write(f"#### {OPTIONS[4]} \n There is, at least, one another prominent object present in the image.")
+    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
     st.write(f"#### {OPTIONS[5]} \n Object occupies only a small portion of the entire scene.")
     st.write(f"#### {OPTIONS[6]} \n Object dominates the image.")
     st.write(f"#### {OPTIONS[7]} \n The lighting in the image is brighter when compared to the prototypical images.")
@@ -41,6 +61,7 @@ def main():
     st.write(f"#### {OPTIONS[15]} \n The object is a distinct type or breed from the same class – e.g., a mini-van within the car class.")
 
     st.markdown("## How to label")
+    st.write("Wow, that is a lot to remember! Don't worry, the description will be present on the sidebar of the next page, when you are doing the labeling.")
 
 
     #model = get_model()

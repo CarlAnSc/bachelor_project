@@ -33,6 +33,10 @@ def store_label(label):
 def main():
 
     st.markdown("# Labeling")
+    st.markdown("1. You can savely move back to the Introduction page to check an example. \n"
+                 "2. Remember to check your submition before moving to the next page. \n"
+                 "3. Do NOT refresh the page. That will make you start over! \n")
+
 
     st.sidebar.markdown("# Progress")
     st.sidebar.markdown(f"Annotated: {len(state.annotations)} — Remaining: {len(state.files)}")
@@ -57,8 +61,6 @@ def main():
 
 
 
-
-
     if state.files:
         # Get example images
         list_imgs = []
@@ -68,7 +70,7 @@ def main():
             list_imgs.append(image_ex)
             
         st.write("#### Prototypical images for class")
-        st.image(list_imgs, width=250)
+        st.image(list_imgs, width=300)
 
         # Get image to be labeled
         selected_file = state.current_file
@@ -112,11 +114,12 @@ def main():
                 st.write(f"Your choices: {list(compress(OPTIONS, choices))} ")
 
         if submitted:
-            st.button("Next", on_click=store_label, args=(choices,), help="Make sure your choices submitted are correct")
+            st.button("Next", on_click=store_label, args=(choices,), help="Make sure your submitted choices are correct")
         
 
     else:
         st.info("Well done! Everything is annotated.")
+        st.write('If you made a mistake place let ud now on ```s204154@dtu.dk```')
         st.download_button(
         "Download annotations as CSV",
         "\n".join([f"{k}\t{v}" for k, v in state.annotations.items()]),
