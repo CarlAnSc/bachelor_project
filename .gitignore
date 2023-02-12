@@ -136,6 +136,7 @@ FashionMNIST/
 
 # data
 data/
+!data/annotations/
 
 #MacOSX shit
 .DS_store	
