@@ -135,7 +135,7 @@ FashionMNIST/
 .vscode/settings.json
 
 # data
-data/
+data/*
 !data/annotations/
 
 #MacOSX shit
