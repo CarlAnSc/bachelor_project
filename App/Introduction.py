@@ -29,7 +29,6 @@ def imagesFormatter(filenames: list):
 def main():
     st.markdown("# Introduction")
     st.sidebar.markdown("# Thank you for helping us!")
-    st.sidebar.markdown("# Thank you for helping us!")
 
     st.write("We thank you a lot for your help! 🌟 It is important that you read the following carefully before starting labeling, such that the analysis can be of high quality.")
     st.markdown("## The metalabels")

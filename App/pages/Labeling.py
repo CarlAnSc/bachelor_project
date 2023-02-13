@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import random
 from itertools import compress
+import pandas as pd
 
 
 st.set_page_config(layout="wide")
@@ -13,6 +14,7 @@ OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
             "15 Style", "16 Subcategory"]
+df_anno2examples = pd.read_csv('Data Analysis/imgs_for_app.csv')
 
 if "annotations" not in state:
     state.annotations = {}
@@ -28,6 +30,10 @@ def store_label(label):
     if state.files:
         state.current_file = random.choice(state.files)
 
+def get_protos(anno_filename):
+    protofiles = df_anno2examples['proto_file_name'][df_anno2examples['file_name'] == anno_filename]
+    label = df_anno2examples['str_label'][df_anno2examples['file_name'] == anno_filename]
+    return protofiles.to_list(), label.to_list()[0]
 
 #@st.experimental_memo
 def main():
@@ -55,26 +61,28 @@ def main():
     st.sidebar.write(f"**{OPTIONS[11]}** The object has different shape.")
     st.sidebar.write(f"**{OPTIONS[12]}** The object has different texture – e.g., a sheep that’s sheared.")
     st.sidebar.write(f"**{OPTIONS[13]}** The object has different pattern – e.g., striped object.")
-    st.sidebar.write(f"**{OPTIONS[14]}** he overall image style is different– e.g., a sketch.")
+    st.sidebar.write(f"**{OPTIONS[14]}** The overall image style is different– e.g., a sketch.")
     st.sidebar.write(f"**{OPTIONS[15]}** The object is a distinct type or breed from the same class – e.g., a mini-van within the car class.")
 
 
 
-
     if state.files:
-        # Get example images
+        # Image to label
+        selected_file = state.current_file
+        filename = os.path.join(BASE_PATH, selected_file)
+
+        # Get proto images images
         list_imgs = []
-        for filepath in state.examples[1:]:
+        proto_images, label = get_protos(selected_file)
+        for filepath in proto_images:
             filename_ex = os.path.join(EXAMPLE_PATH, filepath)
             image_ex = Image.open(filename_ex)
             list_imgs.append(image_ex)
             
-        st.write("#### Prototypical images for class")
+        st.write(f"#### Prototypical images for \"{label}\"")
         st.image(list_imgs, width=300)
 
         # Get image to be labeled
-        selected_file = state.current_file
-        filename = os.path.join(BASE_PATH, selected_file)
         st.write("#### Image to be labeled")
         image = Image.open(filename)
         st.image(image, caption=f"{selected_file}", width=300)
