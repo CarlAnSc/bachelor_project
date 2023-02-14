@@ -53,9 +53,11 @@ def main():
 
     st.markdown("# Labeling")
     st.markdown("1. You can savely move back to the Introduction page to check an example. \n"
-                 "2. Remember to check your submition before moving to the next page. \n"
-                 "3. Do NOT refresh the page. That will make you start over! \n")
-
+                 "2. Remember to check your submission before moving to the next page. \n"
+                 "3. Do NOT refresh the page. That will make you start over! \n"
+                 "4. Note down if you make a mistake - we can correct it for you, if you write to us in when you are done \n"
+                 "5. Tell us your full name, such that we can correct eventual mistakes. If you prefer privacy, write something unique.")
+    nameUser = st.text_input(label='Your name:')
 
     st.sidebar.markdown("# Progress")
     st.sidebar.markdown(f"Annotated: {len(state.annotations)} — Remaining: {len(state.files)}")
@@ -139,18 +141,15 @@ def main():
         
 
     else:
-        st.info("Well done! Everything is annotated.")
+        st.info("Well done! Everything is annotated. Your work has been sent to us!")
         st.write('If you made a mistake place let us know on ```s204154@dtu.dk```')
         #st.download_button(
         #"Download annotations as CSV",
         #"\n".join([f"{k}\t{v}" for k, v in state.annotations.items()]),
-        #file_name="export.csv",
+        #file_name=f"{nameUser}.csv",
         #)
         df_items = pd.DataFrame(state.annotations.items())
-        bucket.blob('upload_test/test.csv').upload_from_string(df_items.to_csv(), 'text/csv')
-    
-    
-    
+        bucket.blob(f'upload_test/{nameUser}.csv').upload_from_string(df_items.to_csv(), 'text/csv')
 
     
 
