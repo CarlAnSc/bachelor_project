@@ -4,17 +4,30 @@ import os
 import random
 from itertools import compress
 import pandas as pd
+from google.cloud import storage
 
 
 st.set_page_config(layout="wide")
+
+
 state = st.session_state
+
+#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'/your_GCP_creds/credentials.json'
+BUCKET_NAME = 'bachebucket'
+client = storage.Client()
+bucket = client.get_bucket(BUCKET_NAME)
+
+
+
+
 EXAMPLE_PATH = "App/Images/example_imgs"
-BASE_PATH = "App/Images/anno_imgs"
+BASE_PATH = "App/Images/anno_imgsTEST"
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
             "15 Style", "16 Subcategory"]
-df_anno2examples = pd.read_csv('Data Analysis/imgs_for_app.csv')
+
+df_anno2examples = pd.read_csv('Data_Analysis/imgs_for_app.csv')
 
 if "annotations" not in state:
     state.annotations = {}
@@ -66,7 +79,7 @@ def main():
 
 
 
-    if state.files:
+    if state.files:        
         # Image to label
         selected_file = state.current_file
         filename = os.path.join(BASE_PATH, selected_file)
@@ -127,12 +140,15 @@ def main():
 
     else:
         st.info("Well done! Everything is annotated.")
-        st.write('If you made a mistake place let ud now on ```s204154@dtu.dk```')
-        st.download_button(
-        "Download annotations as CSV",
-        "\n".join([f"{k}\t{v}" for k, v in state.annotations.items()]),
-        file_name="export.csv",
-    )
+        st.write('If you made a mistake place let us know on ```s204154@dtu.dk```')
+        #st.download_button(
+        #"Download annotations as CSV",
+        #"\n".join([f"{k}\t{v}" for k, v in state.annotations.items()]),
+        #file_name="export.csv",
+        #)
+        df_items = pd.DataFrame(state.annotations.items())
+        bucket.blob('upload_test/test.csv').upload_from_string(df_items.to_csv(), 'text/csv')
+    
     
     
 
