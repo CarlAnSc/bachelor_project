@@ -4,15 +4,13 @@ from pathlib import Path
 
 import numpy as np
 import streamlit as st
-import torch
 from PIL import Image
-from torchvision import transforms
 import pandas as pd
 
 
 #@st.experimental_memo
 st.set_page_config(layout="wide")
-df_intro = pd.read_csv('Data Analysis/imgs_for_intro.csv')
+df_intro = pd.read_csv('Data_Analysis/imgs_for_intro.csv')
 
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",

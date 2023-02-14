@@ -140,3 +140,4 @@ data/*
 
 #MacOSX shit
 .DS_store	
+**/.DS_Store
