@@ -7,24 +7,33 @@ import streamlit as st
 import torch
 from PIL import Image
 from torchvision import transforms
+import pandas as pd
 
 
 #@st.experimental_memo
 st.set_page_config(layout="wide")
-
+df_intro = pd.read_csv('Data Analysis/imgs_for_intro.csv')
 
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
             "15 Style", "16 Subcategory"]
 
-def imagesFormatter(filenames: list):
+def imagesFormatter(deviation_type):
     """The first three images being prototypical. The last being the image you want to illustrate."""
-    ROOT = 'App/Images/anno_imgs/'
+    filenames_proto, str_example, label = getFiles(deviation_type)
+    st.write(f'**Object:** {label}')
+    ROOT1 = 'App/Images/intro_protos/'
+    ROOT2 = 'App/Images/intro_examples/'
     col1, col2 = st.columns([3, 1], gap='large')
-    col1.image([Image.open(ROOT + filenames[0]),Image.open(ROOT + filenames[1]),Image.open(ROOT + filenames[2])], width=250, caption=['','Prototypical images',''])
-    col2.image(Image.open(ROOT + filenames[3]), width=250, caption='Example image')
+    col1.image([Image.open(ROOT1 + filenames_proto[0]),Image.open(ROOT1 + filenames_proto[1]),Image.open(ROOT1 + filenames_proto[2])], width=250, caption=['','Prototypical images',''])
+    col2.image(Image.open(ROOT2 + str_example), width=250, caption='Example image')
+    
 
+def getFiles(deviation_type: str):
+    idx = df_intro[deviation_type] == 1
+    str_example, list_protos, label = df_intro[idx]['file_name'].iloc[0], df_intro[idx]['proto_file_name'].to_list(), df_intro[idx]['str_label'].iloc[0]
+    return list_protos, str_example, label
 
 def main():
     st.markdown("# Introduction")
@@ -37,34 +46,42 @@ def main():
                 "The perfect images are called **Prototypical** images. "
                 "There are 16 different metalabels, and an image can contain multiple of these, or maybe even none. "
                  "The 16 metalabels are listed here:")
-    st.write(f"#### {OPTIONS[0]} \n The object has a different pose or is placed in different location within the image.")
-    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
-    st.write(f"#### {OPTIONS[1]} \n The object is visible only partially due to the camera field of view that did not contain the full object – e.g. cropped out.")
-    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
-    st.write(f"#### {OPTIONS[2]} \n The object is occluded by another object present in the image.")
-    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
-    st.write(f"#### {OPTIONS[3]} \n The object is occluded by a person or human body part – this might include objects manipulated by human hands.")
-    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
-    st.write(f"#### {OPTIONS[4]} \n There is, at least, one another prominent object present in the image.")
-    imagesFormatter(['AortaROI.png','BackROI.png', 'LiverROI.png', 'KidneyROI.png'])
-    st.write(f"#### {OPTIONS[5]} \n Object occupies only a small portion of the entire scene.")
-    st.write(f"#### {OPTIONS[6]} \n Object dominates the image.")
-    st.write(f"#### {OPTIONS[7]} \n The lighting in the image is brighter when compared to the prototypical images.")
-    st.write(f"#### {OPTIONS[8]} \n The lightning in the image is darker when compared to the prototypical images.")
-    st.write(f"#### {OPTIONS[9]} \n The background of the image is different from backgrounds of the prototypical images.")
-    st.write(f"#### {OPTIONS[10]} \n The object has different color.")
-    st.write(f"#### {OPTIONS[11]} \n The object has different shape.")
-    st.write(f"#### {OPTIONS[12]} \n The object has different texture – e.g., a sheep that’s sheared.")
-    st.write(f"#### {OPTIONS[13]} \n The object has different pattern – e.g., striped object.")
-    st.write(f"#### {OPTIONS[14]} \n he overall image style is different– e.g., a sketch.")
-    st.write(f"#### {OPTIONS[15]} \n The object is a distinct type or breed from the same class – e.g., a mini-van within the car class.")
+    st.write(f"#### {OPTIONS[0]} \n **Description:** The object has a different pose or is placed in different location within the image.")
+    imagesFormatter('pose')
+    st.write(f"#### {OPTIONS[1]} \n **Description:** The object is visible only partially due to the camera field of view that did not contain the full object – e.g. cropped out.")
+    imagesFormatter('partial_view')
+    st.write(f"#### {OPTIONS[2]} \n **Description:** The object is occluded by another object present in the image.")
+    imagesFormatter('object_blocking')
+    st.write(f"#### {OPTIONS[3]} \n **Description:** The object is occluded by a person or human body part – this might include objects manipulated by human hands.")
+    imagesFormatter('person_blocking')
+    st.write(f"#### {OPTIONS[4]} \n **Description:** There is, at least, one another prominent object present in the image.")
+    imagesFormatter('multiple_objects')
+    st.write(f"#### {OPTIONS[5]} \n **Description:** Object occupies only a small portion of the entire scene.")
+    imagesFormatter('smaller')
+    st.write(f"#### {OPTIONS[6]} \n **Description:** Object dominates the image.")
+    imagesFormatter('larger')
+    st.write(f"#### {OPTIONS[7]} \n **Description:** The lighting in the image is brighter when compared to the prototypical images.")
+    imagesFormatter('brighter')
+    st.write(f"#### {OPTIONS[8]} \n **Description:** The lightning in the image is darker when compared to the prototypical images.")
+    imagesFormatter('darker')
+    st.write(f"#### {OPTIONS[9]} \n **Description:** The background of the image is different from backgrounds of the prototypical images.")
+    imagesFormatter('background')
+    st.write(f"#### {OPTIONS[10]} \n **Description:** The object has different color.")
+    imagesFormatter('color')
+    st.write(f"#### {OPTIONS[11]} \n **Description:** The object has different shape.")
+    imagesFormatter('shape')
+    st.write(f"#### {OPTIONS[12]} \n **Description:** The object has different texture – e.g., a sheep that’s sheared.")
+    imagesFormatter('texture')
+    st.write(f"#### {OPTIONS[13]} \n **Description:** The object has different pattern – e.g., striped object.")
+    imagesFormatter('pattern')
+    st.write(f"#### {OPTIONS[14]} \n **Description:** The overall image style is different– e.g., a sketch.")
+    imagesFormatter('style')
+    st.write(f"#### {OPTIONS[15]} \n **Description:** The object is a distinct type or breed from the same class – e.g., a mini-van within the car class.")
+    imagesFormatter('subcategory')
 
     st.markdown("## How to label")
     st.write("Wow, that is a lot to remember! Don't worry, the description will be present on the sidebar of the next page, when you are doing the labeling.")
 
-
-    #model = get_model()
-    #model.eval()
     
 
     

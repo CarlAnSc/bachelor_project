@@ -1,0 +1,31 @@
+file_name,multiple_objects,background,color,brighter,darker,style,larger,smaller,object_blocking,person_blocking,partial_view,pattern,pose,shape,subcategory,texture,justification,one_word,label,str_label
+ILSVRC2012_val_00049472.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,side view image of cheeseburger,white background,933,cheeseburger
+ILSVRC2012_val_00003768.JPEG,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,Another type green snake hanging on a tree branch.,hanging tree brunch,55,green snake
+ILSVRC2012_val_00041473.JPEG,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,front view image of Welsh Springer Spaniel standing beside the ocean,cropped,218,Welsh springer spaniel
+ILSVRC2012_val_00001470.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,a strainer of a sink,sink,828,strainer
+ILSVRC2012_val_00049179.JPEG,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,the packet is on the fabric,bird,692,packet
+ILSVRC2012_val_00023283.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,a puppy lying down on the pale green lawn with flowers.,puppy flower,174,Norwegian elkhound
+ILSVRC2012_val_00030540.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,a dog running on the grass,running,216,clumber
+ILSVRC2012_val_00039246.JPEG,0,1,0,0,1,0,0,1,0,0,0,1,1,0,0,0,zoomed out image of television,zoomed out,851,television
+ILSVRC2012_val_00015178.JPEG,0,1,0,0,0,0,1,0,0,0,0,1,1,0,0,0,A front view of torch ,front view large,862,torch
+ILSVRC2012_val_00023750.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,front view image of a dog ,snow,244,Tibetan mastiff
+ILSVRC2012_val_00007306.JPEG,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,Top-view of a orange earthstar. ,top view orange,995,earthstar
+ILSVRC2012_val_00014415.JPEG,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,black barber chairs inside a salon,black salon people,423,barber chair
+ILSVRC2012_val_00026219.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,A different view of bassoon.,view angle,432,bassoon
+ILSVRC2012_val_00009634.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,An Boston bull taken outdoor,outdoor,195,Boston bull
+ILSVRC2012_val_00036975.JPEG,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,a doormat with a welcome greeting,welcome bricks,539,doormat
+ILSVRC2012_val_00040913.JPEG,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,A white Hermit crab.,white pattern,125,hermit crab
+ILSVRC2012_val_00015410.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,a right-side-view of junco.,right side view,13,junco
+ILSVRC2012_val_00040676.JPEG,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,A Pekingese lying down in a fluffy carpet biting its treat.,brown fluppy carpet,154,Pekinese
+ILSVRC2012_val_00040002.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,quail is standing on the stone,low angle,85,quail
+ILSVRC2012_val_00046002.JPEG,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,a lady holding a lease of a black dog while walking on the streets ,black,196,miniature schnauzer
+ILSVRC2012_val_00041922.JPEG,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,a whole body image of a triceratops bones on display.  ,whole body,51,triceratops
+ILSVRC2012_val_00021882.JPEG,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,Sideview of a blue tow truck. ,sideview color pattern,864,tow truck
+ILSVRC2012_val_00030117.JPEG,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,Front view of a brass. ,front view pattern,458,brass
+ILSVRC2012_val_00021683.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,A close up photo of gecko's head,close up,38,banded gecko
+ILSVRC2012_val_00030263.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,back view image of a bird standing on top of a metal,back view standing on metal,131,little blue heron
+ILSVRC2012_val_00018867.JPEG,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,a table of a la cart menu. ,table,922,menu
+ILSVRC2012_val_00003808.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,the dog is sitting on a sand,facing right,258,Samoyed
+ILSVRC2012_val_00010411.JPEG,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,A different pattern of a long-horned beetle.,pattern background distant view,303,long-horned beetle
+ILSVRC2012_val_00017515.JPEG,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,a pair of dogs standing  on the brick pavement. ,backside bricks,201,silky terrier
+ILSVRC2012_val_00025106.JPEG,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,electric locomotive has different pattern,high angle,547,electric locomotive
