@@ -5,10 +5,13 @@ import random
 from itertools import compress
 import pandas as pd
 from google.cloud import storage
-
+import time
+from random_word import RandomWords
 
 st.set_page_config(layout="wide")
 
+r = RandomWords()
+userID_random = r.get_random_word()
 
 state = st.session_state
 
@@ -16,7 +19,6 @@ state = st.session_state
 BUCKET_NAME = 'bachebucket'
 client = storage.Client()
 bucket = client.get_bucket(BUCKET_NAME)
-
 
 
 
@@ -33,12 +35,17 @@ if "annotations" not in state:
     state.annotations = {}
     state.files = os.listdir(BASE_PATH)
     state.current_file = state.files[0]
+    state.userID = userID_random
 
     
 state.examples = os.listdir(EXAMPLE_PATH)
 
-def store_label(label):
+def store_label(label, nameUser):
     state.annotations[state.current_file] = label
+
+    df_items = pd.DataFrame(state.annotations.items())
+    bucket.blob(f'upload_test/{state.userID}.csv').upload_from_string(df_items.to_csv(), 'text/csv')
+
     state.files.remove(state.current_file)
     if state.files:
         state.current_file = random.choice(state.files)
@@ -48,16 +55,15 @@ def get_protos(anno_filename):
     label = df_anno2examples['str_label'][df_anno2examples['file_name'] == anno_filename]
     return protofiles.to_list(), label.to_list()[0]
 
+
 #@st.experimental_memo
 def main():
-
+    start = time.time()
     st.markdown("# Labeling")
     st.markdown("1. You can savely move back to the Introduction page to check an example. \n"
-                 "2. Remember to check your submission before moving to the next page. \n"
-                 "3. Do NOT refresh the page. That will make you start over! \n"
-                 "4. Note down if you make a mistake - we can correct it for you, if you write to us in when you are done \n"
-                 "5. Tell us your full name, such that we can correct eventual mistakes. If you prefer privacy, write something unique.")
-    nameUser = st.text_input(label='Your name:')
+                 "2. Do NOT refresh the page. That will make you start over! \n"
+                 "3. Note down if you make a mistake - we can correct it for you, if you write to us in when you are done \n")
+                 #"4. Tell us your full name, such that we can correct eventual mistakes. If you prefer privacy, write something unique.")
 
     st.sidebar.markdown("# Progress")
     st.sidebar.markdown(f"Annotated: {len(state.annotations)} — Remaining: {len(state.files)}")
@@ -78,7 +84,6 @@ def main():
     st.sidebar.write(f"**{OPTIONS[13]}** The object has different pattern – e.g., striped object.")
     st.sidebar.write(f"**{OPTIONS[14]}** The overall image style is different– e.g., a sketch.")
     st.sidebar.write(f"**{OPTIONS[15]}** The object is a distinct type or breed from the same class – e.g., a mini-van within the car class.")
-
 
 
     if state.files:        
@@ -136,20 +141,26 @@ def main():
             if submitted:
                 st.write(f"Your choices: {list(compress(OPTIONS, choices))} ")
 
+        
         if submitted:
-            st.button("Next", on_click=store_label, args=(choices,), help="Make sure your submitted choices are correct")
+            st.button("Next", on_click=store_label, args=(choices,state.userID,), help="Make sure your submitted choices are correct")
         
 
     else:
+        end = time.time()
+        deltaT = end - start
         st.info("Well done! Everything is annotated. Your work has been sent to us!")
-        st.write('If you made a mistake place let us know on ```s204154@dtu.dk```')
+        st.write('If you made a mistake place let us know on ```s204154@dtu.dk``` and tell us your name below so we can find your annotations👇')
         #st.download_button(
         #"Download annotations as CSV",
         #"\n".join([f"{k}\t{v}" for k, v in state.annotations.items()]),
-        #file_name=f"{nameUser}.csv",
+        #file_name=f"{nameUser}{deltaT}.csv",
         #)
-        df_items = pd.DataFrame(state.annotations.items())
-        bucket.blob(f'upload_test/{nameUser}.csv').upload_from_string(df_items.to_csv(), 'text/csv')
+        name = st.text_input(label='Name:')
+        if name:
+            st.write(f'Registered as *{name}*')
+            df_items = pd.DataFrame(state.annotations.items())
+            bucket.blob(f'upload_test/{name}{deltaT.csv}').upload_from_string(df_items.to_csv(), 'text/csv')
 
     
 
