@@ -149,7 +149,6 @@ def main():
     else:
         end = time.time()
         deltaT = end - start
-        st.info("Well done! Everything is annotated. Your work has been sent to us!")
         st.write('If you made a mistake place let us know on ```s204154@dtu.dk``` and tell us your name below so we can find your annotations👇')
         #st.download_button(
         #"Download annotations as CSV",
@@ -160,7 +159,8 @@ def main():
         if name:
             st.write(f'Registered as *{name}*')
             df_items = pd.DataFrame(state.annotations.items())
-            bucket.blob(f'upload_test/{name}{deltaT.csv}').upload_from_string(df_items.to_csv(), 'text/csv')
+            bucket.blob(f'upload_test/{name}-{state.userID}.csv').upload_from_string(df_items.to_csv(), 'text/csv')
+            st.info("Well done! Everything is annotated. Your work has been sent to us!")
 
     
 
