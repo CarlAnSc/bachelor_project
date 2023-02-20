@@ -16,16 +16,20 @@ userID_random = r.get_random_word()
 userTime = time.strftime("%H-%M",t)
 
 state = st.session_state
+#Uncomment if local:
+#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/juliu/.config/gcloud/application_default_credentials.json'
 
-#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'/your_GCP_creds/credentials.json'
 BUCKET_NAME = 'bachebucket'
 client = storage.Client()
 bucket = client.get_bucket(BUCKET_NAME)
 
-
+url = 'https://storage.cloud.google.com/bachebucket'
+ex_url = '/Images/example_imgs/'
+base_url = '/Images/anno_imgs/'
 
 EXAMPLE_PATH = "App/Images/example_imgs"
 BASE_PATH = "App/Images/anno_imgs"
+
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
@@ -97,16 +101,18 @@ def main():
         list_imgs = []
         proto_images, label = get_protos(selected_file)
         for filepath in proto_images:
-            filename_ex = os.path.join(EXAMPLE_PATH, filepath)
-            image_ex = Image.open(filename_ex)
-            list_imgs.append(image_ex)
+            #filename_ex = os.path.join(EXAMPLE_PATH, filepath)
+            filename_ex = url + ex_url + filepath
+            #image_ex = Image.open(filename_ex)
+            list_imgs.append(filename_ex)
             
         st.write(f"#### Prototypical images for \"{label}\"")
         st.image(list_imgs, width=300)
 
         # Get image to be labeled
         st.write("#### Image to be labeled")
-        image = Image.open(filename)
+        #image = Image.open(filename)
+        image = url + base_url + selected_file
         st.image(image, caption=f"{selected_file}", width=300)
 
 

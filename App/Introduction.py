@@ -12,6 +12,8 @@ import pandas as pd
 st.set_page_config(layout="wide")
 df_intro = pd.read_csv('Data_Analysis/imgs_for_intro.csv')
 
+url = 'https://storage.cloud.google.com/bachebucket'
+
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
@@ -21,12 +23,11 @@ def imagesFormatter(deviation_type):
     """The first three images being prototypical. The last being the image you want to illustrate."""
     filenames_proto, str_example, label = getFiles(deviation_type)
     st.write(f'**Object:** {label}')
-    ROOT1 = 'App/Images/intro_protos/'
-    ROOT2 = 'App/Images/intro_examples/'
+    ROOT1 = '/Images/intro_protos/'
+    ROOT2 = '/Images/intro_examples/'
     col1, col2 = st.columns([3, 1], gap='large')
-    col1.image([Image.open(ROOT1 + filenames_proto[0]),Image.open(ROOT1 + filenames_proto[1]),Image.open(ROOT1 + filenames_proto[2])], width=250, caption=['','Prototypical images',''])
-    col2.image(Image.open(ROOT2 + str_example), width=250, caption='Example image')
-    
+    col1.image([(url + ROOT1 + filenames_proto[0]),(url + ROOT1 + filenames_proto[1]),(url + ROOT1 + filenames_proto[2])], width=250, caption=['','Prototypical images',''])
+    col2.image((url + ROOT2 + str_example), width=250, caption='Example image')
 
 def getFiles(deviation_type: str):
     idx = df_intro[deviation_type] == 1
