@@ -38,6 +38,7 @@ def main():
     st.sidebar.markdown("# Thank you for helping us!")
 
     st.write("We thank you a lot for your help! 🌟 It is important that you read the following carefully before starting labeling, such that the analysis can be of high quality.")
+    st.write("Due to Cloud Run limitation, you have exactly one hour from now on")
     st.markdown("## The metalabels")
     st.write("The metalabels are extra labels for images of objects. "
                 "These describe how the object and image differs from the a perfect image of the same object. "

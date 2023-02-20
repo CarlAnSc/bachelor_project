@@ -11,7 +11,9 @@ from random_word import RandomWords
 st.set_page_config(layout="wide")
 
 r = RandomWords()
+t = time.localtime()
 userID_random = r.get_random_word()
+userTime = time.strftime("%H-%M",t)
 
 state = st.session_state
 
@@ -23,7 +25,7 @@ bucket = client.get_bucket(BUCKET_NAME)
 
 
 EXAMPLE_PATH = "App/Images/example_imgs"
-BASE_PATH = "App/Images/anno_imgsTEST"
+BASE_PATH = "App/Images/anno_imgs"
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
@@ -35,7 +37,7 @@ if "annotations" not in state:
     state.annotations = {}
     state.files = os.listdir(BASE_PATH)
     state.current_file = state.files[0]
-    state.userID = userID_random
+    state.userID = userID_random + "-" + userTime
 
     
 state.examples = os.listdir(EXAMPLE_PATH)
