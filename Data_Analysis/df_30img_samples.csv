@@ -1,7 +1,7 @@
 file_name,multiple_objects,background,color,brighter,darker,style,larger,smaller,object_blocking,person_blocking,partial_view,pattern,pose,shape,subcategory,texture,justification,one_word,label,str_label
 ILSVRC2012_val_00049472.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,side view image of cheeseburger,white background,933,cheeseburger
 ILSVRC2012_val_00003768.JPEG,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,Another type green snake hanging on a tree branch.,hanging tree brunch,55,green snake
-ILSVRC2012_val_00041473.JPEG,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,front view image of Welsh Springer Spaniel standing beside the ocean,cropped,218,Welsh springer spaniel
+ILSVRC2012_val_00030756.JPEG,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,A dog walking on grassy ground,walking,218,Welsh springer spaniel
 ILSVRC2012_val_00001470.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,a strainer of a sink,sink,828,strainer
 ILSVRC2012_val_00049179.JPEG,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,the packet is on the fabric,bird,692,packet
 ILSVRC2012_val_00023283.JPEG,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,a puppy lying down on the pale green lawn with flowers.,puppy flower,174,Norwegian elkhound

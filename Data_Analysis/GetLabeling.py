@@ -1,7 +1,9 @@
 import pandas as pd
 from scipy import spatial
-from sklearn.metrics import jaccard_score
+from sklearn.metrics import jaccard_score, pairwise, log_loss
 import numpy as np
+from os import listdir
+import os
 
 
 
@@ -26,43 +28,72 @@ def TrueData():
     return df.iloc[:,:17]
 
 
-def Tests(dataframe: pd.DataFrame, dataframeTrue: pd.DataFrame):
+def Tests(personID: int, dataframe: pd.DataFrame, dataframeTrue: pd.DataFrame):
 
-    userScores = {'cosine': [], 'jaccard': []}
+    dataframe = dataframe.sort_values(['file_name'])
+    dataframeTrue = dataframeTrue.sort_values(['file_name'])
+
+    #listCosine = pairwise.cosine_similarity(dataframe[categories], dataframeTrue[categories])
+    #print(np.array(listCosine).diagonal())
+
+    fileScores = {'file': [], 'cosine': [], 'jaccard': [], 'logloss': [], 'person': [personID]*30}
+    cateScores = {'cate': categories, 'cosine': [], 'jaccard': [], 'logloss': [], 'person': [personID]*16}
+
     for _, row in dataframeTrue.iterrows():
-        #COCKERSPANIER
-        try:
-            file, labels = row['file_name'], row[categories]
-            #Get labels in correct order
-            trueLabels = labels[categories].values
-            print(file)
-            userLabels = dataframe[dataframe.file_name == file][categories].values[0]
-            print(userLabels, '\n', trueLabels)
 
+        file, labels = row['file_name'], row[categories]
+        #Get labels in correct order
+        trueLabels = labels[categories].values
+        #print(file)
+        userLabels = dataframe[dataframe.file_name == file][categories].values[0]
+        #print(userLabels, '\n', trueLabels)
 
-            # Cosine and Jaccard
-            cos_sim = 1 - spatial.distance.cosine(trueLabels, userLabels)
-            jac_score = jaccard_score(trueLabels.tolist(), userLabels.tolist())
+        # Cosine and Jaccard and Binary Cross Entropy
+        cos_sim = 1 - spatial.distance.cosine(trueLabels, userLabels)
+        jac_score = jaccard_score(trueLabels.tolist(), userLabels.tolist())
+        log_loss1 = log_loss(y_true = trueLabels.astype('int'),y_pred = userLabels.astype('int'))
 
-            userScores['cosine'].append(cos_sim)
-            userScores['jaccard'].append(jac_score)
+        fileScores['file'].append(file)
+        fileScores['cosine'].append(cos_sim)
+        fileScores['jaccard'].append(jac_score)
+        fileScores['logloss'].append(log_loss1)
+    
+    for column in categories:
+        cos_sim = 1 - spatial.distance.cosine(dataframe[column],dataframeTrue[column])
+        jac_score = jaccard_score(dataframe[column].tolist(), dataframeTrue[column].tolist())
+        log_loss1 = log_loss(y_pred = dataframe[column].astype('int'),y_true = dataframeTrue[column].astype('int'), labels= [0,1])
+        
 
-            # F1 på categories
+        cateScores['cosine'].append(cos_sim)
+        cateScores['jaccard'].append(jac_score)
+        cateScores['logloss'].append(log_loss1)
+    
 
-        except:
-            print('Something is wrong')
-
-    return userScores
+    return fileScores, cateScores
 
 
 
 if __name__ == "__main__":
-
-    df = ToDataframe('../Julius.csv')
+    dfFiles = pd.DataFrame()
+    dfCates = pd.DataFrame()
     dfTrue = TrueData()
 
-    Julius = Tests(df,dfTrue)
+    PATH = 'annotations/'
+    files = listdir(PATH)
+    print(files)
+    for i,filename in enumerate(files):
+        filename = os.path.join(PATH, filename)
+        df = ToDataframe(filename)
+        dictFiles, dictCate = Tests(i, df,dfTrue)
 
-    print(np.mean(Julius['cosine']))
-    print(np.mean(Julius['jaccard']))
+        userdf1 = pd.DataFrame.from_dict(dictFiles)
+        dfFiles = pd.concat([dfFiles,userdf1],ignore_index=True)
+
+        userdf2 = pd.DataFrame.from_dict(dictCate)
+        dfCates = pd.concat([dfCates,userdf2],ignore_index=True)
+
+    dfFiles.to_csv('transformed/scoresFiles.csv')
+    dfCates.to_csv('transformed/scoresCategories.csv')
+    #print(pd.DataFrame.from_dict(dictFiles))
+
     
