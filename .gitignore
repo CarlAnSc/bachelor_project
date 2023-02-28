@@ -128,9 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# datasets
-FashionMNIST/
-
 # vs code
 .vscode/settings.json
 
@@ -141,3 +138,6 @@ data/*
 #MacOSX shit
 .DS_store	
 **/.DS_Store
+
+#Models
+models/*
