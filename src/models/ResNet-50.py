@@ -30,9 +30,9 @@ transform_test = transforms.Compose([
 ])
 
 # Load the ImageNet dataset
-train_data = ImageNet(root=f'{dataPath}train', split='train', transform=transform_train)
-val_data = ImageNet(root=f'{dataPath}val', split='val', transform=transform_test)
-test_data = ImageNet(root=f'{dataPath}test', split='val', transform=transform_test)
+train_data = ImageNet(root= dataPath + 'train', split='train', transform=transform_train)
+val_data = ImageNet(root= dataPath + 'val', split='val', transform=transform_test)
+test_data = ImageNet(root=dataPath + 'test', split='val', transform=transform_test)
 
 # Define the ResNet-50 model
 class ResNet(pl.LightningModule):
