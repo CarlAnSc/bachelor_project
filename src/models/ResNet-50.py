@@ -57,7 +57,7 @@ class ResNet(pl.LightningModule):
 
 
 # Log experiment with WandB
-wandb_logger = pl.loggers.WandbLogger(project='resnet-50-imagenet')
+wandb_logger = pl.loggers.WandbLogger(project='bachelor-juca')
 
 # Define the PyTorch Lightning trainer
 trainer = pl.Trainer(
@@ -66,7 +66,6 @@ trainer = pl.Trainer(
     progress_bar_refresh_rate=20, 
     logger=wandb_logger
 )
-
 
 
 # Create data loaders

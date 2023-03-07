@@ -5,6 +5,7 @@ import numpy as np
 from os import listdir
 import os
 from sklearn.metrics import balanced_accuracy_score
+import scipy.stats as st
 
 
 
@@ -103,23 +104,62 @@ def Tests(personName: str, dataframe: pd.DataFrame, dataframeTrue: pd.DataFrame)
     return fileScores, cateScores, personScores
 
 
+def confidence(data: pd.DataFrame):
+    list_interval = {}
+    for (columnName, columnData) in data.iloc[:,1:-1].items():
+        interval = st.t.interval(alpha=0.95,
+              df=len(columnData)-1,
+              loc=np.mean(columnData), 
+              scale=st.sem(columnData))
+        list_interval[columnName] = (interval - np.mean(columnData))[1]
+    return list_interval
+
+def run_confidence(dfCates, dfFiles, dfPersons):
+
+    # Remove BASELINE
+    df1 = dfCates[dfCates.person != 'BASELINE']
+    df2 = dfFiles[dfFiles.person != 'BASELINE']
+    df3 = dfPersons[dfPersons.person != 'BASELINE']
+
+    # Get confidence interval
+    listy1 = [confidence(df1[df1.cate == category]) for category in df1['cate'].unique() ]
+    df1Conf = pd.DataFrame.from_records(listy1,index=df1['cate'].unique())
+
+    listy2 = [confidence(df2[df2.file == file]) for file in df2['file'].unique() ]
+    df2Conf = pd.DataFrame.from_records(listy2,index=df2['file'].unique())
+
+    dicty3 = confidence(df3)
+    df3Conf = pd.DataFrame(dicty3, index=[0])
+
+    df1Conf.to_csv('transformed/confCategories.csv')
+    df2Conf.to_csv('transformed/confFiles.csv')
+    df3Conf.to_csv('transformed/confPersons.csv')
+
+    #return df1Conf, df2Conf, df3Conf
 
 if __name__ == "__main__":
+
+    # Initialize dataframes
     dfRaw = pd.DataFrame()
     dfFiles = pd.DataFrame()
     dfCates = pd.DataFrame()
     dfPersons = pd.DataFrame()
     dfTrue = TrueData()
 
+    # Set path for annotations
     PATH = 'annotations/'
     files = listdir(PATH)
+    # Run through files
     for i,filename in enumerate(files):
         fullfilename = os.path.join(PATH, filename)
         df = ToDataframe(fullfilename)
         df['person'] = [filename[:-4]]*30
-        dfRaw = pd.concat([dfRaw,df],ignore_index=False)
 
+        # Get metrics
         dictFiles, dictCate, dictPersons = Tests(filename[:-4], df,dfTrue)
+
+        # Append to each dataframe
+        dfRaw = pd.concat([dfRaw,df],ignore_index=False)
 
         userdf1 = pd.DataFrame.from_dict(dictFiles)
         dfFiles = pd.concat([dfFiles,userdf1],ignore_index=True)
@@ -130,11 +170,14 @@ if __name__ == "__main__":
         userdf3 = pd.DataFrame.from_dict(dictPersons)
         dfPersons = pd.concat([dfPersons,userdf3],ignore_index=True)
 
-    #print(dfRaw)
+    # Get confidence interval and save as csv
+    run_confidence(dfCates, dfFiles, dfPersons)
+
+    # Save to csv files
     dfRaw.to_csv('transformed/allData.csv')
     dfFiles.to_csv('transformed/scoresFiles.csv')
     dfCates.to_csv('transformed/scoresCategories.csv')
     dfPersons.to_csv('transformed/scoresPersons.csv')
-    print(files)
+
 
     
