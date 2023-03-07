@@ -9,3 +9,5 @@ scipy>=1.7.0
 torch
 torchvision
 torchaudio
+wandb
+pytorch_lightning
