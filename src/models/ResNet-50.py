@@ -5,6 +5,14 @@ from torchvision.datasets import ImageNet
 from torchvision import transforms
 import pytorch_lightning as pl
 import wandb
+import argparse
+
+parser = argparse.ArgumentParser(description='Training of model for hpc and local')
+parser.add_argument('path', type=str, help='Path of ImageNet data')
+args = parser.parse_args()
+
+# ../../../../../dtu/imagenet/ILSVRC/Data/CLS-LOC/
+dataPath = args.path
 
 # Define transforms
 transform_train = transforms.Compose([
@@ -22,9 +30,9 @@ transform_test = transforms.Compose([
 ])
 
 # Load the ImageNet dataset
-train_data = ImageNet(root='path/to/train', split='train', transform=transform_train)
-val_data = ImageNet(root='path/to/val', split='val', transform=transform_test)
-test_data = ImageNet(root='path/to/test', split='val', transform=transform_test)
+train_data = ImageNet(root=f'{dataPath}train', split='train', transform=transform_train)
+val_data = ImageNet(root=f'{dataPath}val', split='val', transform=transform_test)
+test_data = ImageNet(root=f'{dataPath}test', split='val', transform=transform_test)
 
 # Define the ResNet-50 model
 class ResNet(pl.LightningModule):
