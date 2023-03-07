@@ -19,7 +19,7 @@ except ImportError:
     from importlib_resources import files
 from tqdm import tqdm
 
-import imagenet_x.annotations
+import src.imagenet_x.annotations
 
 METACLASSES = [
     "device",
@@ -103,7 +103,7 @@ def softmax(x, axis=None):
     return exp_x_shifted / np.sum(exp_x_shifted, axis=axis, keepdims=True)
 
 def get_annotation_path():
-    return files("imagenet_x") / "annotations" 
+    return files("src.imagenet_x") / "annotations" 
 
 def load_model_predictions(models_dir: str, verbose=False):
     filename_label = pd.read_csv(get_annotation_path() / "filename_label.csv")
@@ -163,7 +163,8 @@ def load_annotations(
         The annotations for the given partition and factor selection
     """
     imagenet_x_type = f"imagenet_x_{partition}_{which_factor}_factor.jsonl"
-    annot_file = get_annotation_path()
+    #annot_file = get_annotation_path()
+    annot_file = files("src.imagenet_x") / "annotations" 
     imagenet_x_json = annot_file / imagenet_x_type
     metaclass_mapping = annot_file / f"imagenet_1k_classes_to_100_metaclasses.csv"
     prototypes = annot_file / f"prototypical_paths.csv"

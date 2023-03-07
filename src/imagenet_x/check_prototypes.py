@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from tabulate import tabulate
 
-from imagenet_x.utils import (
+from src.imagenet_x.utils import (
     load_annotations,
     augment_model_predictions,
     load_model_predictions,

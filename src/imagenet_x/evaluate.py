@@ -15,7 +15,7 @@ except ImportError:
     raise ImportError("Please install pytorch and torchvision to use this module.")
 
 from distutils.log import warn
-from imagenet_x.utils import get_annotation_path
+from src.imagenet_x.utils import get_annotation_path
 
 import numpy as np
 import pandas as pd
@@ -29,7 +29,7 @@ except ImportError:
     import warnings
     warn("IPython not installed, cannot display images")
     
-from imagenet_x import load_annotations, FACTORS
+from src.imagenet_x import load_annotations, FACTORS
 
 
 class ImageNetXImageFolder(datasets.ImageFolder):

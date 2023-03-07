@@ -24,10 +24,10 @@ except ImportError:
     raise ImportError("Please install plotly and seaborn and scipy to use this module.")
 
 
-from imagenet_x.utils import load_annotations, FACTORS, METACLASSES
-from imagenet_x.prevalence import Prevalence
-from imagenet_x.aggregate import spearman_corr_heatmaps
-from imagenet_x.model_types import model_types_map, SELFSUPERVISED_MODELS, ModelTypes
+from src.imagenet_x.utils import load_annotations, FACTORS, METACLASSES
+from src.imagenet_x.prevalence import Prevalence
+from src.imagenet_x.aggregate import spearman_corr_heatmaps
+from src.imagenet_x.model_types import model_types_map, SELFSUPERVISED_MODELS, ModelTypes
 
 
 def escape(l):
@@ -962,7 +962,7 @@ def plot_bar_plot(data_to_display, x="Factor", y=None, hue=None, hue_order=None,
     data_to_display = data_to_display.copy()
     if y == "Error ratio":
         data_to_display[y] = data_to_display[y] - 1
-    plt.figure(figsize=(3.5 if compact else 10, 4.5 if compact else 2.8))
+    plt.figure(figsize=(3.5 if compact else 20, 4.5 if compact else 5))
     g = sns.barplot(
         data=data_to_display,
         x=x,
