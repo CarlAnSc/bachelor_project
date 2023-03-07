@@ -12,6 +12,7 @@ parser.add_argument('path', type=str, help='Path of ImageNet data')
 args = parser.parse_args()
 
 # ../../../../../dtu/imagenet/ILSVRC/Data/CLS-LOC/
+# ../../data/ImageNetVal/
 dataPath = args.path
 
 # Define transforms
