@@ -107,11 +107,11 @@ def get_annotation_path():
 
 def load_model_predictions(models_dir: str, verbose=False):
     filename_label = pd.read_csv(get_annotation_path() / "filename_label.csv")
+    print(filename_label)
     paths, labels = (
         filename_label.file_name,
         filename_label.set_index("file_name").label,
     )
-
     models = {}
     top_1_accs = pd.Series(dtype=np.float32)
     model_dirs = os.listdir(models_dir)
@@ -163,7 +163,7 @@ def load_annotations(
         The annotations for the given partition and factor selection
     """
     imagenet_x_type = f"imagenet_x_{partition}_{which_factor}_factor.jsonl"
-    #annot_file = get_annotation_path()
+    annot_file = get_annotation_path()
     annot_file = files("src.imagenet_x") / "annotations" 
     imagenet_x_json = annot_file / imagenet_x_type
     metaclass_mapping = annot_file / f"imagenet_1k_classes_to_100_metaclasses.csv"

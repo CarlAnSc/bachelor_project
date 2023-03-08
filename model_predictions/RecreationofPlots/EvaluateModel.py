@@ -2,29 +2,49 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import torch
 
+from pytorch_pretrained_vit import ViT
 from torchvision.models import ResNet18_Weights, resnet18
 from tqdm import tqdm
 from torchvision import datasets, transforms
 
 from src.imagenet_x.evaluate import ImageNetX, get_vanilla_transform
 from src.imagenet_x import FACTORS, plots
+import os
 
 imagenet_val_path = '../../data/ImageNetVal'
 transforms = get_vanilla_transform()
-dataset = ImageNetX(imagenet_val_path, transform=transforms)    
+dataset = ImageNetX(imagenet_val_path, transform=transforms, filter_prototypes=False)    
 
 torch.manual_seed(420)
-
+modelname = 'B_16_Vit'
 # Load the model
 #Default ResNet18.
-modelname= 'resnet18'
-model = resnet18(weights=ResNet18_Weights.DEFAULT)
+#model = resnet18(weights=ResNet18_Weights.DEFAULT)
 
 #Dino VIT:
 #model = torch.hub.load('facebookresearch/dino:main', 'dino_vitb8')
+#checkpoint = 'dino_vitbase8_pretrain_full_checkpoint.pth'
+
+def load_pretrained_weights(model, pretrained_weights, checkpoint_key):
+    if os.path.isfile(pretrained_weights):
+        state_dict = torch.load(pretrained_weights, map_location="cpu")
+        if checkpoint_key is not None and checkpoint_key in state_dict:
+            print(f"Take key {checkpoint_key} in provided checkpoint dict")
+            state_dict = state_dict[checkpoint_key]
+        # remove `module.` prefix
+        state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
+        # remove `backbone.` prefix induced by multicrop wrapper
+        state_dict = {k.replace("backbone.", ""): v for k, v in state_dict.items()}
+        msg = model.load_state_dict(state_dict, strict=False)
+        print('Pretrained weights found at {} and loaded with msg: {}'.format(pretrained_weights, msg))
+
+#load_pretrained_weights(model, checkpoint, None)
+#B16ViT
+model = ViT('B_32_imagenet1k', pretrained=True)
+
 
 device = 0
-batch_size = 128
+batch_size = 32
 num_workers = 4
 # Evaluate model on ImageNetX using simple loop
 model.eval()
