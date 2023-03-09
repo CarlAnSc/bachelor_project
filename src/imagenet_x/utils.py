@@ -106,8 +106,7 @@ def get_annotation_path():
     return files("src.imagenet_x") / "annotations" 
 
 def load_model_predictions(models_dir: str, verbose=False):
-    filename_label = pd.read_csv(get_annotation_path() / "filename_label.csv")
-    print(filename_label)
+    filename_label = pd.read_csv(get_annotation_path() / "Mfilename_labels.csv")
     paths, labels = (
         filename_label.file_name,
         filename_label.set_index("file_name").label,
@@ -136,6 +135,7 @@ def load_model_predictions(models_dir: str, verbose=False):
         else:
             raise ValueError(f"Unknown file type {path}")
 
+        print(df)
         top_1_accs[model] = (df["predicted_class"] == labels).mean()
         models[model] = df
     return models, top_1_accs
