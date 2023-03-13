@@ -13,6 +13,7 @@ args = parser.parse_args()
 
 # ../../../../../dtu/imagenet/ILSVRC/Data/CLS-LOC/
 # ../../data/ImageNetVal/
+# python ResNet-50.py "../../../../../../../../work3/s204162/Bachelor/"
 dataPath = args.path
 
 # Define transforms
@@ -31,7 +32,7 @@ transform_test = transforms.Compose([
 ])
 
 # Load the ImageNet dataset
-train_data = ImageNet(root= dataPath, split='train', transform=transform_train)
+train_data = ImageNet(root= dataPath, split='train', transform=transform_train) #split='train',
 val_data = ImageNet(root= dataPath, split='val', transform=transform_test)
 #test_data = ImageNet(root=dataPath, split='test', transform=transform_test)
 
