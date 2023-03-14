@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 # ../../../../../dtu/imagenet/ILSVRC/Data/CLS-LOC/
 # ../../data/ImageNetVal/
-# python ResNet-50.py "../../../../../../../../work3/s204162/Bachelor/"
+# python src/models/ResNet-50.py ResNet-50.py "../../../../../../work3/s204162/Bachelor/"
 dataPath = args.path
 
 # Define transforms
@@ -31,10 +31,14 @@ transform_test = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
+print('Nu loader vi')
+
 # Load the ImageNet dataset
-train_data = ImageNet(root= dataPath, split='train', transform=transform_train) #split='train',
-val_data = ImageNet(root= dataPath, split='val', transform=transform_test)
+#train_data = ImageNet(root= dataPath, split='train', transform=transform_train) #split='train',
+val_data = ImageNet(root= dataPath, transform=transform_test) #split='val',
 #test_data = ImageNet(root=dataPath, split='test', transform=transform_test)
+
+print('Nu er vi færdige med det')
 
 # Define the ResNet-50 model
 class ResNet(pl.LightningModule):
@@ -79,7 +83,7 @@ trainer = pl.Trainer(
 
 
 # Create data loaders
-train_loader = DataLoader(train_data, batch_size=64, num_workers=8, shuffle=True, pin_memory=True)
+#train_loader = DataLoader(train_data, batch_size=64, num_workers=8, shuffle=True, pin_memory=True)
 val_loader = DataLoader(val_data, batch_size=64, num_workers=8, pin_memory=True)
 #test_loader = DataLoader(test_data, batch_size=64, num_workers=8, pin_memory=True)
 
