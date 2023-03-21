@@ -6,6 +6,7 @@ from torchvision import transforms
 import pytorch_lightning as pl
 import wandb
 import argparse
+import torchmetrics
 
 parser = argparse.ArgumentParser(description='Training of model for hpc and local')
 parser.add_argument('path', type=str, help='Path of ImageNet data')
@@ -46,6 +47,8 @@ class ResNet(pl.LightningModule):
         super().__init__()
         self.resnet50 = torch.hub.load('pytorch/vision:v0.9.0', 'resnet50', pretrained=False)
         self.resnet50.fc = nn.Linear(2048, num_classes)
+        self.train_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
+        self.valid_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
 
     def forward(self, x):
         return self.resnet50(x)
@@ -77,7 +80,6 @@ wandb_logger = pl.loggers.WandbLogger(project='bachelor-juca')
 trainer = pl.Trainer(
     gpus=1, 
     max_epochs=50, 
-    progress_bar_refresh_rate=20, 
     logger=wandb_logger
 )
 

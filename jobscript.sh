@@ -22,14 +22,13 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -o gpu_%J.out
-#BSUB -e gpu_%J.err
+#BSUB -oo job_output/gpu_%J.out
+#BSUB -eo job_output/gpu_%J.err
 # -- end of LSF options --
 
 nvidia-smi
 # Load the cuda module
 module load cuda/11.6
 # Which python
-~/miniconda3/envs/hpc_env/bin/python
-src/models/ResNet-50.py "../../../../../../work3/s204162/Bachelor/"
---trainer.accelerator 'gpu' --trainer.devices 1  --trainer.max_epochs 5
+~/miniconda3/envs/hpc_env/bin/python \
+src/models/ResNet-50.py "../../../../../../work3/s204162/Bachelor/" 

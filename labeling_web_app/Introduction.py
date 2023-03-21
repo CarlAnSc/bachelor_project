@@ -81,7 +81,7 @@ def main():
 
     st.markdown("## How to label")
     st.write("Wow, that is a lot to remember! Don't worry, the description will be present on the sidebar of the next page, when you are doing the labeling.")
-
+    
     
 
     
