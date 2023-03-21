@@ -48,7 +48,7 @@ class ResNet(pl.LightningModule):
         self.resnet50 = torch.hub.load('pytorch/vision:v0.9.0', 'resnet50', pretrained=False)
         self.resnet50.fc = nn.Linear(2048, num_classes)
         self.train_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
-        self.valid_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
+        #self.valid_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
 
     def forward(self, x):
         return self.resnet50(x)
@@ -65,7 +65,7 @@ class ResNet(pl.LightningModule):
         y_hat = self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log('val_loss', loss)
-        self.log('val_acc', pl.metrics.functional.accuracy(y_hat, y))
+        self.log('val_acc', self.train_acc(y_hat, y))
         
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(self.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
@@ -79,15 +79,15 @@ wandb_logger = pl.loggers.WandbLogger(project='bachelor-juca')
 # Define the PyTorch Lightning trainer
 trainer = pl.Trainer(
     gpus=1, 
-    max_epochs=50, 
+    max_epochs=50,  
     logger=wandb_logger
 )
 
 
 # Create data loaders
-train_loader = DataLoader(train_data, batch_size=64, num_workers=8, shuffle=True, pin_memory=True)
-val_loader = DataLoader(val_data, batch_size=64, num_workers=8, pin_memory=True)
-test_loader = DataLoader(test_data, batch_size=64, num_workers=8, pin_memory=True)
+train_loader = DataLoader(train_data, batch_size=32, num_workers=8, shuffle=True, pin_memory=True)
+val_loader = DataLoader(val_data, batch_size=32, num_workers=8, pin_memory=True)
+test_loader = DataLoader(test_data, batch_size=32, num_workers=8, pin_memory=True)
 
 # Initialize the ResNet model
 resnet_model = ResNet()
