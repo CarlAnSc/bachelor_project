@@ -1,17 +1,17 @@
 #!/bin/sh
 ### General options
 ### –- specify queue --
-#BSUB -q gpuv100
+#BSUB -q gpua100
 ### -- set the job Name --
-#BSUB -J testjob
+#BSUB -J train-JuCa
 ### -- ask for number of cores (default: 1) --
-#BSUB -n 1
+#BSUB -n 16
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 1:00
+#BSUB -W 2:00
 # request 5GB of system-memory
-#BSUB -R "rusage[mem=5GB]"
+#BSUB -R "rusage[mem=4GB]"
 ### -- set the email address --
 # please uncomment the following line and put in your e-mail address,
 # if you want to receive e-mail notifications on a non-default address
@@ -28,7 +28,7 @@
 
 nvidia-smi
 # Load the cuda module
-module load cuda/11.6
+module load cuda/11.7
 # Which python
 ~/miniconda3/envs/hpc_env/bin/python \
-src/models/ResNet-50.py "../../../../../../work3/s204162/Bachelor/" 
+src/models/train_model.py --path /work3/s204162/Bachelor/TopFactor/
