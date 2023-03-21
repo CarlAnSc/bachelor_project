@@ -17,7 +17,7 @@ class ResNet(pl.LightningModule):
         self.accuracy = torchmetrics.Accuracy(
             task="multiclass", num_classes=num_classes
         )
-        self.f1_score = torchmetrics.F1score(
+        self.f1_score = torchmetrics.F1Score(
             num_classes=num_classes, task="multiclass"
                                              )
         self.args = args
