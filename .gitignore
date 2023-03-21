@@ -142,3 +142,6 @@ data/*
 
 #Models
 models/*
+
+#Wandb:
+wandb/*

@@ -32,7 +32,7 @@ except ImportError:
 from src.imagenet_x import load_annotations, FACTORS
 
 
-class ImageNetXImageFolder(datasets.ImageFolder):
+class ImageNetXImageFolder(datasets.Imag    eFolder):
     """Loads ImageNetX annotations along with Imagenet validation samples"""
     
     def __init__(self, imagenet_path, *args, which_factor="top", partition="val", filter_prototypes=True, **kwargs):
