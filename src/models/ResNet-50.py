@@ -35,8 +35,8 @@ transform_test = transforms.Compose([
 print('Nu loader vi')
 
 # Load the ImageNet dataset
-train_data = ImageNet(root= dataPath, transform=transform_train) #split='train',
-val_data = ImageNet(root= dataPath, transform=transform_test) #split='val',
+train_data = ImageNet(root= dataPath,split='train', transform=transform_train) #
+val_data = ImageNet(root= dataPath,split='val', transform=transform_test) #split='val',
 test_data = ImageNet(root=dataPath, transform=transform_test)
 
 print('Nu er vi færdige med det')
@@ -45,8 +45,8 @@ print('Nu er vi færdige med det')
 class ResNet(pl.LightningModule):
     def __init__(self, num_classes=1000):
         super().__init__()
-        self.resnet50 = torch.hub.load('pytorch/vision:v0.9.0', 'resnet50', pretrained=False)
-        self.resnet50.fc = nn.Linear(2048, num_classes)
+        self.resnet50 = torch.hub.load('pytorch/vision:v0.9.0', 'resnet50', weights='ResNet50_Weights.IMAGENET1K_V1')
+        self.resnet50.fc = nn.Linear(int(2048), int(num_classes))
         self.train_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
         #self.valid_acc = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
 
@@ -55,14 +55,14 @@ class ResNet(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
+        y_hat = self.resnet50(x)    # self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log('train_loss', loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
+        y_hat = self.resnet50(x)    # self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log('val_loss', loss)
         self.log('val_acc', self.train_acc(y_hat, y))
