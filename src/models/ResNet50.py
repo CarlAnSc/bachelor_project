@@ -14,12 +14,9 @@ class ResNet(pl.LightningModule):
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
         self.resnet50.fc = nn.Linear(int(2048), int(num_classes))
-        self.accuracy = torchmetrics.Accuracy(
-            task="multiclass", num_classes=num_classes
-        )
-        self.f1_score = torchmetrics.F1Score(
-            num_classes=num_classes, task="multiclass"
-                                             )
+        self.accuracy1 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
+        self.accuracy3 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes, top_k=3)
+        self.f1_score = torchmetrics.F1Score(num_classes=num_classes, task="multiclass")
         self.args = args
 
     def forward(self, x):
@@ -37,7 +34,8 @@ class ResNet(pl.LightningModule):
         y_hat = self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log("val_loss", loss)
-        self.log("val_acc", self.accuracy(y_hat, y))
+        self.log("val_acc1", self.accuracy1(y_hat, y))
+        self.log("val_acc3", self.accuracy3(y_hat, y))
         self.log("val_f1", self.f1_score(y_hat, y))
 
     def configure_optimizers(self):
