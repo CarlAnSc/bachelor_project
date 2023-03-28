@@ -34,12 +34,28 @@ class ResNet(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
+        self.confusion_matrix.update(y_hat,y)
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat, y))
         self.log("val_acc3", self.accuracy3(y_hat, y))
         self.log("val_f1", self.f1_score(y_hat, y))
-        self.log("val_confusion_matrix", self.confusion_matrix(y_hat, y))
+        #self.log('val_confusion_matrix', self.confusion_matrix.compute(), on_step=False, on_epoch=True, )
+        self.log.add_figure('val_confusion_matrix', self.confusion_matrix.compute(), on_step=False, on_epoch=True)
+    #def on_validation_epoch_end(self):
+    #    confmat = self.confusion_matrix.compute()
 
+        #log to wandb
+    #    f, ax = plt.subplots(figsize = (15,10)) 
+    #    sns.heatmap(confmat, annot=True, ax=ax)
+    #    self.log({"plot": wandb.Image(f) })
+        
+    #    self.confmat.reset()
+        # log the confusion matrix as an image
+    #    self.logger.experiment.log({"confusion_matrix": wandb.Image(confmat)})
+        # reset the confusion matrix for the next epoch
+    #    self.confusion_matrix.reset()
+
+        
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
             self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
