@@ -16,8 +16,8 @@ class ResNet(pl.LightningModule):
         self.resnet50.fc = nn.Linear(int(2048), int(num_classes))
         self.accuracy1 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
         self.accuracy3 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes, top_k=3)
-        self.f1_score = torchmetrics.F1Score(num_classes=num_classes, task="multiclass")
-        self.confusion_matrix = torchmetrics.ConfusionMatrix(num_classes=num_classes)
+        self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes)
+        self.confusion_matrix = torchmetrics.ConfusionMatrix(task="multiclass", num_classes=num_classes)
         self.args = args
 
     def forward(self, x):
