@@ -2,6 +2,8 @@ import torch
 from torch import nn
 import pytorch_lightning as pl
 import torchmetrics
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 # Define the ResNet-50 model
@@ -35,12 +37,18 @@ class ResNet(pl.LightningModule):
         y_hat = self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.confusion_matrix.update(y_hat,y)
+
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat, y))
         self.log("val_acc3", self.accuracy3(y_hat, y))
         self.log("val_f1", self.f1_score(y_hat, y))
-        #self.log('val_confusion_matrix', self.confusion_matrix.compute(), on_step=False, on_epoch=True, )
-        self.log.add_figure('val_confusion_matrix', self.confusion_matrix.compute(), on_step=False, on_epoch=True)
+
+
+        #log to wandb
+        fig, ax = plt.subplots() 
+        sns.heatmap(self.confusion_matrix.compute(), annot=True, ax=ax)
+        self.logger.experiment.add_figure("val_confmat", fig)
+        
     #def on_validation_epoch_end(self):
     #    confmat = self.confusion_matrix.compute()
 
