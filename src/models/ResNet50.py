@@ -17,6 +17,7 @@ class ResNet(pl.LightningModule):
         self.accuracy1 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
         self.accuracy3 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes, top_k=3)
         self.f1_score = torchmetrics.F1Score(num_classes=num_classes, task="multiclass")
+        self.confusion_matrix = torchmetrics.ConfusionMatrix(num_classes=num_classes)
         self.args = args
 
     def forward(self, x):
@@ -37,6 +38,7 @@ class ResNet(pl.LightningModule):
         self.log("val_acc1", self.accuracy1(y_hat, y))
         self.log("val_acc3", self.accuracy3(y_hat, y))
         self.log("val_f1", self.f1_score(y_hat, y))
+        self.log("val_confusion_matrix", self.confusion_matrix(y_hat, y))
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
