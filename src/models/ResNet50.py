@@ -55,7 +55,7 @@ class ResNet(pl.LightningModule):
         #self.logger.experiment.log({"confusion_matrix": wandb.Image(cm)})
 
     def on_validation_epoch_end(self):
-        confmat = self.confusion_matrix.compute().numpy()
+        confmat = self.confusion_matrix.compute().cpu() # .numpy()
 
         #log to wandb
         f, ax = plt.subplots(figsize = (15,10)) 
