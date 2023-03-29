@@ -4,6 +4,8 @@ import pytorch_lightning as pl
 import torchmetrics
 import seaborn as sns
 import matplotlib.pyplot as plt
+import wandb
+
 
 
 # Define the ResNet-50 model
@@ -42,22 +44,25 @@ class ResNet(pl.LightningModule):
         self.log("val_acc1", self.accuracy1(y_hat, y))
         self.log("val_acc3", self.accuracy3(y_hat, y))
         self.log("val_f1", self.f1_score(y_hat, y))
+        
+        self.confusion_matrix.update()
+		#print(cm)
+        #log to wandb
+        #fig, ax = plt.subplots() 
+        #sns.heatmap(self.confusion_matrix.compute().cpu().numpy(), annot=True, ax=ax)
+        #plt.savefig('confusion matrix')
+        #self.logger.experiment.add_figure("val_confmat", fig)
+        #self.logger.experiment.log({"confusion_matrix": wandb.Image(cm)})
 
+    def on_validation_epoch_end(self):
+        confmat = self.confusion_matrix.compute()
 
         #log to wandb
-        fig, ax = plt.subplots() 
-        sns.heatmap(self.confusion_matrix.compute(), annot=True, ax=ax)
-        self.logger.experiment.add_figure("val_confmat", fig)
+        f, ax = plt.subplots(figsize = (15,10)) 
+        sns.heatmap(confmat, annot=True, ax=ax)
+        self.logger.experiment.add_figure({"plot": wandb.Image(f) })
         
-    #def on_validation_epoch_end(self):
-    #    confmat = self.confusion_matrix.compute()
-
-        #log to wandb
-    #    f, ax = plt.subplots(figsize = (15,10)) 
-    #    sns.heatmap(confmat, annot=True, ax=ax)
-    #    self.log({"plot": wandb.Image(f) })
-        
-    #    self.confmat.reset()
+        self.confmat.reset()
         # log the confusion matrix as an image
     #    self.logger.experiment.log({"confusion_matrix": wandb.Image(confmat)})
         # reset the confusion matrix for the next epoch
