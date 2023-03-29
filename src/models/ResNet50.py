@@ -60,7 +60,7 @@ class ResNet(pl.LightningModule):
         #log to wandb
         f, ax = plt.subplots(figsize = (15,10)) 
         sns.heatmap(confmat, annot=True, ax=ax)
-        self.logger.experiment.add_figure({"plot": wandb.Image(f) })
+        self.logger.experiment.log({"plot": wandb.Image(f) })
         
         self.confmat.reset()
         # log the confusion matrix as an image
