@@ -62,7 +62,7 @@ class ResNet(pl.LightningModule):
         sns.heatmap(confmat, annot=True, ax=ax, )
         ax.set_xlabel('Predicted labels',size=15)
         ax.set_ylabel('True labels', size=15)
-        ax.set_title(f'Confusion Matrix with sum {np.sum(confmat)}', size=15)
+        ax.set_title(f'Confusion Matrix with sum {torch.sum(confmat)}', size=15)
         self.logger.experiment.log({"plot": wandb.Image(f) })
         
         self.confusion_matrix.reset()
