@@ -45,7 +45,7 @@ class ResNet(pl.LightningModule):
         self.log("val_acc3", self.accuracy3(y_hat, y))
         self.log("val_f1", self.f1_score(y_hat, y))
         
-        self.confusion_matrix.update()
+        self.confusion_matrix.update(preds=y_hat, target=y)
 		#print(cm)
         #log to wandb
         #fig, ax = plt.subplots() 
