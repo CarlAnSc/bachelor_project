@@ -5,6 +5,7 @@ import torchmetrics
 import seaborn as sns
 import matplotlib.pyplot as plt
 import wandb
+import numpy as np
 
 
 
@@ -38,7 +39,6 @@ class ResNet(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = nn.CrossEntropyLoss()(y_hat, y)
-        self.confusion_matrix.update(y_hat,y)
 
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat, y))
@@ -60,8 +60,9 @@ class ResNet(pl.LightningModule):
         #log to wandb
         f, ax = plt.subplots(figsize = (15,10)) 
         sns.heatmap(confmat, annot=True, ax=ax, )
-        ax.set_xlabel('Predicted labels')
-        ax.set_ylabel('True labels')
+        ax.set_xlabel('Predicted labels',size=15)
+        ax.set_ylabel('True labels', size=15)
+        ax.set_title(f'Confusion Matrix with sum {np.sum(confmat)}', size=15)
         self.logger.experiment.log({"plot": wandb.Image(f) })
         
         self.confusion_matrix.reset()
