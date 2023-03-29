@@ -22,7 +22,7 @@ class ResNet(pl.LightningModule):
         self.accuracy1 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes)
         self.accuracy3 = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes, top_k=3)
         self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes)
-        self.confusion_matrix = torchmetrics.ConfusionMatrix(task="multiclass", num_classes=num_classes)
+        self.confusion_matrix = torchmetrics.ConfusionMatrix(task="multiclass", num_classes=num_classes, normalize="true")
         self.args = args
 
     def forward(self, x):
@@ -53,7 +53,7 @@ class ResNet(pl.LightningModule):
 
         #log to wandb
         f, ax = plt.subplots(figsize = (15,10)) 
-        sns.heatmap(confmat, annot=True, ax=ax, normaize='true')
+        sns.heatmap(confmat, annot=True, ax=ax)
         ax.set_xlabel('Predicted labels',size=15)
         ax.set_ylabel('True labels', size=15)
         ax.set_title(f'Confusion Matrix with sum {torch.sum(confmat)}', size=15)
