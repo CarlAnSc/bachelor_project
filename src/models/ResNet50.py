@@ -46,30 +46,20 @@ class ResNet(pl.LightningModule):
         self.log("val_f1", self.f1_score(y_hat, y))
         
         self.confusion_matrix.update(preds=y_hat, target=y)
-		#print(cm)
-        #log to wandb
-        #fig, ax = plt.subplots() 
-        #sns.heatmap(self.confusion_matrix.compute().cpu().numpy(), annot=True, ax=ax)
-        #plt.savefig('confusion matrix')
-        #self.logger.experiment.add_figure("val_confmat", fig)
-        #self.logger.experiment.log({"confusion_matrix": wandb.Image(cm)})
+		
 
     def on_validation_epoch_end(self):
         confmat = self.confusion_matrix.compute().cpu() # .numpy()
 
         #log to wandb
         f, ax = plt.subplots(figsize = (15,10)) 
-        sns.heatmap(confmat, annot=True, ax=ax, )
+        sns.heatmap(confmat, annot=True, ax=ax, normaize='true')
         ax.set_xlabel('Predicted labels',size=15)
         ax.set_ylabel('True labels', size=15)
         ax.set_title(f'Confusion Matrix with sum {torch.sum(confmat)}', size=15)
         self.logger.experiment.log({"plot": wandb.Image(f) })
         
         self.confusion_matrix.reset()
-        # log the confusion matrix as an image
-    #    self.logger.experiment.log({"confusion_matrix": wandb.Image(confmat)})
-        # reset the confusion matrix for the next epoch
-    #    self.confusion_matrix.reset()
 
         
     def configure_optimizers(self):
