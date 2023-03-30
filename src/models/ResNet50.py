@@ -24,6 +24,8 @@ labels = ['background',
  'subcategory',
  'texture']
 
+
+
 # Define the ResNet-50 model
 class ResNet(pl.LightningModule):
     def __init__(self, args, num_classes=16):
@@ -78,9 +80,14 @@ class ResNet(pl.LightningModule):
 
         
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(
-            self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
-        )
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1) # StepLR -> cosine
+        # Choose optimizer from dict
+        dictOptimizer = {
+            "adam": torch.optim.Adam(self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay),
+             "sgd": torch.optim.SGD(self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay)}
+        optimizer = dictOptimizer[self.args.optimizer]
+        #optimizer = torch.optim.Adam(
+        #    self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
+        #)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, Tmax=self.args.epochs) # StepLR -> cosine
         return [optimizer], [scheduler]
     

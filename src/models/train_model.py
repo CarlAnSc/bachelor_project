@@ -56,5 +56,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, help="Batch size", default=16)
     parser.add_argument("--num_workers", type=int, help="Number of workers", default=8)
     parser.add_argument("--seed", type=int, help="Seed", default=42)
+    parser.add_argument("--optimizer", type=str, help="Choose between the two: \"adam\" and \"sgd\" ", default="sgd")
+    # Måske add momentum
     args = parser.parse_args()
     main(args)
