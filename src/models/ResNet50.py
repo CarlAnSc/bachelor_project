@@ -68,7 +68,7 @@ class ResNet(pl.LightningModule):
 
         #log to wandb
         f, ax = plt.subplots(figsize = (15,10)) 
-        sns.heatmap(confmat, ax=ax, xticklabels=labels, yticklabels=labels)
+        sns.heatmap(confmat, ax=ax, annot=True, xticklabels=labels, yticklabels=labels)
         ax.set_xlabel('Predicted labels',size=15)
         ax.set_ylabel('True labels', size=15)
         ax.set_title(f'Confusion Matrix with sum {torch.sum(confmat)}', size=15)
@@ -83,3 +83,4 @@ class ResNet(pl.LightningModule):
         )
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
         return [optimizer], [scheduler]
+    
