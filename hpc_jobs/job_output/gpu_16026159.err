@@ -1,0 +1,27 @@
+/zhome/8c/f/156328/.bashrc: line 34: e: command not found
+Loaded module: cuda/11.7
+wandb: ERROR api_key not configured (no-tty). call wandb.login(key=[your_api_key])
+Traceback (most recent call last):
+  File "/work3/s204162/bachelor_project/src/models/train_model.py", line 60, in <module>
+    main(args)
+  File "/work3/s204162/bachelor_project/src/models/train_model.py", line 14, in main
+    wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/pytorch_lightning/loggers/wandb.py", line 357, in __init__
+    _ = self.experiment
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/lightning_fabric/loggers/logger.py", line 117, in experiment
+    return get_experiment() or _DummyExperiment()
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/lightning_utilities/core/rank_zero.py", line 27, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/lightning_fabric/loggers/logger.py", line 115, in get_experiment
+    return fn(self)
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/pytorch_lightning/loggers/wandb.py", line 405, in experiment
+    self._experiment = wandb.init(**self._wandb_init)
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 1140, in init
+    wi.setup(kwargs)
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 288, in setup
+    wandb_login._login(
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/wandb/sdk/wandb_login.py", line 298, in _login
+    wlogin.prompt_api_key()
+  File "/work3/s204162/bachelor_project/venv/lib/python3.10/site-packages/wandb/sdk/wandb_login.py", line 228, in prompt_api_key
+    raise UsageError("api_key not configured (no-tty). call " + directive)
+wandb.errors.UsageError: api_key not configured (no-tty). call wandb.login(key=[your_api_key])

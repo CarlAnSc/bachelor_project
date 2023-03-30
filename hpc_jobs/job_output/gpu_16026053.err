@@ -1,0 +1,5 @@
+Loaded module: cuda/11.7
+Traceback (most recent call last):
+  File "/work3/s204162/bachelor_project/src/models/train_model.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
