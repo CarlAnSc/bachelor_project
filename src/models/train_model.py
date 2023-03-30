@@ -11,11 +11,11 @@ from src.models.ResNet50 import ResNet
 def main(args):
     dotenvpath = find_dotenv()
     load_dotenv(dotenvpath)
-    wandbAPI = os.getenv("WANDB_API_KEY")
+    os.environ["WANDB_API_KEY"]= os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
     # Log experiment with WandB
-    wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca", key=wandbAPI)
+    wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
     wandb_logger.experiment.config.update(args)
 
