@@ -146,5 +146,3 @@ models/*
 #Wandb:
 wandb/*
 
-#jobscript
-hpc_jobs/jobscript.sh
