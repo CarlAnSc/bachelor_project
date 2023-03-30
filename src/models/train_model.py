@@ -34,14 +34,13 @@ def main(args):
     samples_weights = weights[train_data.targets]
     sampler = WeightedRandomSampler(samples_weights, len(samples_weights), replacement=True)
 
-    train_loader = DataLoader(
-        train_data,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
-        #shuffle=True,
-        pin_memory=True,
-        sampler=sampler
-    )
+    if args.bootstrap:
+        train_loader = DataLoader(  train_data, batch_size=args.batch_size, num_workers=args.num_workers,
+                                    pin_memory=True, sampler=sampler )
+    else:
+        train_loader = DataLoader(  train_data, batch_size=args.batch_size, num_workers=args.num_workers,
+                                    shuffle=True, pin_memory=True)
+        
     val_loader = DataLoader(
         val_data,
         batch_size=args.batch_size,
@@ -71,6 +70,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, help="Seed", default=42)
     parser.add_argument("--optimizer", type=str, help="Choose between the two: \"adam\" and \"sgd\" ", default="sgd")
     parser.add_argument("--momentum", type=float, help="Momentum. Will only be used for SGD optimizer, else; ignored.", default=0.9)
+    parser.add_argument("--bootstrap", type=bool, help="Bootstrap. Will bootstrap with the inverse distribution.", default=True)
     # Måske add momentum
     args = parser.parse_args()
     main(args)
