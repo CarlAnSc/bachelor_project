@@ -145,4 +145,5 @@ models/*
 
 #Wandb:
 wandb/*
+hpc_jobs/job_output/*
 
