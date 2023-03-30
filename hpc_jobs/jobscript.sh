@@ -29,5 +29,8 @@
 # Load the cuda module
 module load cuda/11.7
 # Which python
-~/miniconda3/envs/hpc_env/bin/python \
-src/models/train_model.py --path /work3/s204162/Bachelor/TopFactor/ --epoch 60 --batch_size 64 --lr 1e-5 
+cd /work3/s204162/
+source bachelor_project/venv/bin/activate
+python bachelor_project/src/models/train_model.py \
+--path /work3/s204162/Bachelor/TopFactor/ \
+--epoch 60 --batch_size 64 --lr 1e-5
