@@ -3,9 +3,12 @@ import torch
 import pytorch_lightning as pl
 import os
 from dotenv import load_dotenv, find_dotenv 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 from src.data.dataloader import TopFactor, ValTransforms
 from src.models.ResNet50 import ResNet
+
+
+class_distribution = torch.tensor([15441,45,6476,125,157,40,78,678,6571,61,16080,696,1473,45,614,286])
 
 
 def main(args):
@@ -25,13 +28,19 @@ def main(args):
     train_data = TopFactor(args.path + "train/", transform=ValTransforms())
     val_data = TopFactor(args.path + "val/", transform=ValTransforms())
 
+
     # Create data loaders
+    weights = 1.0 / class_distribution
+    samples_weights = weights[train_data.targets]
+    sampler = WeightedRandomSampler(samples_weights, len(samples_weights), replacement=True)
+
     train_loader = DataLoader(
         train_data,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         shuffle=True,
         pin_memory=True,
+        sampler=sampler
     )
     val_loader = DataLoader(
         val_data,
