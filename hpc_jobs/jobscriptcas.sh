@@ -10,7 +10,7 @@
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 0:30
+#BSUB -W 2:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=4GB]"
 ### -- set the email address --
@@ -32,4 +32,5 @@ module load cuda/11.7
 # Which python
 ~/miniconda3/envs/hpc_env/bin/python \
 src/models/train_model.py --path /work3/s204162/data/TopFactor/ \
---epochs 50 --batch_size 64 --lr 1e-5 --weight_decay 0.0005  --optimizer sgd
+--epochs 60 --batch_size 128 --lr 1e-5 --weight_decay 0.0005 \
+--momentum 0.9 --optimizer sgd --bootstrap True
