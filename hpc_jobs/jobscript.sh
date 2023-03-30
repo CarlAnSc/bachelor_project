@@ -32,5 +32,5 @@ module load cuda/11.7
 cd /work3/s204162/
 source bachelor_project/venv/bin/activate
 python bachelor_project/src/models/train_model.py \
---path /work3/s204162/Bachelor/TopFactor/ \
+--path /work3/s204162/data/TopFactor/ \
 --epoch 60 --batch_size 64 --lr 1e-5

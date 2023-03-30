@@ -81,6 +81,6 @@ class ResNet(pl.LightningModule):
         optimizer = torch.optim.Adam(
             self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
         )
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1) # StepLR -> cosine
         return [optimizer], [scheduler]
     
