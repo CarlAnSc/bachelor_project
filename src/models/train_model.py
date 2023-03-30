@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Training of model for hpc and local")
     parser.add_argument("--path", type=str, help="Path of ImageNet data")
     parser.add_argument("--lr", type=float, help="Learning rate", default=1e-3)
-    parser.add_argument("--weight_decay", type=float, help="Learning rate", default=0.9)
+    parser.add_argument("--weight_decay", type=float, help="Learning rate", default=0.0005)
     parser.add_argument("--epochs", type=int, help="Number of epochs", default=50)
     parser.add_argument("--batch_size", type=int, help="Batch size", default=16)
     parser.add_argument("--num_workers", type=int, help="Number of workers", default=8)
