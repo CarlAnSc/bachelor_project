@@ -33,4 +33,4 @@ cd /work3/s204162/
 source bachelor_project/venv/bin/activate
 python bachelor_project/src/models/train_model.py \
 --path /work3/s204162/data/TopFactor/ \
---epoch 60 --batch_size 64 --lr 1e-5
+--epoch 50 --batch_size 64 --lr 1e-5 --optimizer 'sgd'
