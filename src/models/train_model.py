@@ -1,17 +1,21 @@
 import argparse
 import torch
 import pytorch_lightning as pl
-
+import os
+from dotenv import load_dotenv, find_dotenv 
 from torch.utils.data import DataLoader
 from src.data.dataloader import TopFactor, ValTransforms
 from src.models.ResNet50 import ResNet
 
 
 def main(args):
+    dotenvpath = find_dotenv()
+    load_dotenv(dotenvpath)
+    wandbAPI = os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
     # Log experiment with WandB
-    wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
+    wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca", key=wandbAPI)
     # Set args:
     wandb_logger.experiment.config.update(args)
 

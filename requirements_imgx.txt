@@ -11,3 +11,4 @@ torchvision
 torchaudio
 wandb
 pytorch_lightning
+python-dotenv
