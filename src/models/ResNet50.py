@@ -83,7 +83,7 @@ class ResNet(pl.LightningModule):
         # Choose optimizer from dict
         dictOptimizer = {
             "adam": torch.optim.Adam(self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay),
-             "sgd": torch.optim.SGD(self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay)}
+             "sgd": torch.optim.SGD(self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay, momentum=self.args.momentum)}
         optimizer = dictOptimizer[self.args.optimizer]
         #optimizer = torch.optim.Adam(
         #    self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay

@@ -31,4 +31,5 @@
 module load cuda/11.7
 # Which python
 ~/miniconda3/envs/hpc_env/bin/python \
-src/models/train_model.py --path /work3/s204162/data/TopFactor/ --epoch 3 --batch_size 64 --lr 1e-5 --optimizer sgd
+src/models/train_model.py --path /work3/s204162/data/TopFactor/ \
+--epochs 50 --batch_size 64 --lr 1e-5 --weight_decay 0.0005  --optimizer sgd
