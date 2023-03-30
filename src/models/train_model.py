@@ -16,7 +16,7 @@ def main(args):
     wandb_logger.experiment.config.update(args)
 
     # Define the PyTorch Lightning trainer
-    trainer = pl.Trainer(accelerator="auto", max_epochs=50, logger=wandb_logger)
+    trainer = pl.Trainer(accelerator="auto", max_epochs=80, logger=wandb_logger)
 
     train_data = TopFactor(args.path + "train/", transform=ValTransforms())
     val_data = TopFactor(args.path + "val/", transform=ValTransforms())
