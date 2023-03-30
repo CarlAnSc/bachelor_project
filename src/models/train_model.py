@@ -38,7 +38,7 @@ def main(args):
         train_data,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        shuffle=True,
+        #shuffle=True,
         pin_memory=True,
         sampler=sampler
     )

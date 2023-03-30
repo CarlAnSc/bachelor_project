@@ -23,8 +23,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -oo job_output/gpu_%J.out
-#BSUB -eo job_output/gpu_%J.err
+#BSUB -oo hpc_jobs/job_output/gpu_%J.out
+#BSUB -eo hpc_jobs/job_output/gpu_%J.err
 # -- end of LSF options --
 
 # Load the cuda module
