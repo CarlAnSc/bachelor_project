@@ -10,7 +10,7 @@
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 0:30
+#BSUB -W 2:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=4GB]"
 ### -- set the email address --
@@ -32,4 +32,4 @@ cd /work3/s204162/
 source bachelor_project/venv/bin/activate
 python bachelor_project/src/models/train_model.py \
 --path /work3/s204162/Bachelor/TopFactor/ \
---epoch 60 --batch_size 64 --lr 1e-5 --optimizer sgd
+--epoch 60 --batch_size 64 --lr 1e-5 --optimizer sgd --weighted_loss True

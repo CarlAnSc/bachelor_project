@@ -11,30 +11,9 @@ from src.models.ResNet50 import ResNet
 # TODO: Net dataset, 4 classes (background, color, pattern, pose)
 
 
-class_distribution = torch.tensor(
-    [15441, 45, 6476, 125, 157, 40, 78, 678, 6571, 61, 16080, 696, 1473, 45, 614, 286]
-)
-labels = [
-    "background",
-    "brighter",
-    "color",
-    "darker",
-    "larger",
-    "multiple_objects",
-    "object_blocking",
-    "partial_view",
-    "pattern",
-    "person_blocking",
-    "pose",
-    "shape",
-    "smaller",
-    "style",
-    "subcategory",
-    "texture",
-]
+class_distribution = {16:[15441, 45, 6476, 125, 157, 40, 78, 678, 6571, 61, 16080, 696, 1473, 45, 614, 286],
+4: [15441, 6476, 6571, 16080]}
 
-class_distribution2 = [15441, 6476, 6571, 16080]
-labels2 = ["background", "color", "pattern", "pose"]
 
 
 def main(args):
@@ -55,15 +34,15 @@ def main(args):
 
     train_data = TopFactor(args.path + "train/", transform=ValTransforms())
     val_data = TopFactor(args.path + "val/", transform=ValTransforms())
-
-    # Create data loaders
-    weights = 1.0 / class_distribution
-    samples_weights = weights[train_data.targets]
-    sampler = WeightedRandomSampler(
-        samples_weights, len(samples_weights), replacement=True
-    )
+    number_of_classes = len(train_data.classes)
 
     if args.bootstrap:
+        # Create data loaders
+        weights = 1.0 / torch.tensor(class_distribution[number_of_classes])
+        samples_weights = weights[train_data.targets]
+        sampler = WeightedRandomSampler(
+            samples_weights, len(samples_weights), replacement=True
+        )
         train_loader = DataLoader(
             train_data,
             batch_size=args.batch_size,
@@ -89,8 +68,11 @@ def main(args):
     # test_loader = DataLoader(test_data, batch_size=32, num_workers=8, pin_memory=True)
 
     # Initialize the ResNet model
-    resnet_model = ResNet(args, num_classes=16)
-
+    if args.weighted_loss:
+        normed_weights = torch.FloatTensor([1 - (x / sum(class_distribution[number_of_classes])) for x in class_distribution[number_of_classes]])
+        resnet_model = ResNet(args, num_classes=number_of_classes, normed_weights=normed_weights)
+    else:
+        resnet_model = ResNet(args, num_classes=number_of_classes)
     # Train the model
     trainer.fit(resnet_model, train_loader, val_loader)
 
@@ -125,8 +107,13 @@ if __name__ == "__main__":
         "--bootstrap",
         type=bool,
         help="Bootstrap. Will bootstrap with the inverse distribution.",
-        default=True,
+        default=False,
     )
-    # Måske add momentum
+    parser.add_argument(
+        "--weighted_loss",
+        type=bool,
+        help="Weighted loss. Will weight the loss with the inverse distribution.",
+        default=False,
+    )
     args = parser.parse_args()
     main(args)

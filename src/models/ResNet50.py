@@ -29,7 +29,7 @@ labels = [
 
 # Define the ResNet-50 model
 class ResNet(pl.LightningModule):
-    def __init__(self, args, num_classes=16):
+    def __init__(self, args, normed_weights=[], num_classes=16):
         super().__init__()
         self.resnet50 = torch.hub.load(
             "pytorch/vision:v0.9.0",
@@ -49,22 +49,31 @@ class ResNet(pl.LightningModule):
             task="multiclass", num_classes=num_classes, normalize="true"
         )
         self.args = args
+        self.register_buffer
+        print(f"Device is {self.device}")
+        if self.args.weighted_loss:
+           self.normed_weights = normed_weights.to('cuda')
 
     def forward(self, x):
         return self.resnet50(x)
 
-    # TODO: weight loss
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = nn.CrossEntropyLoss()(y_hat, y)
+        if self.args.weighted_loss:
+            loss = nn.CrossEntropyLoss(weight=self.normed_weights)(y_hat, y)
+        else:
+            loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = nn.CrossEntropyLoss()(y_hat, y)
+        if self.args.weighted_loss:
+            loss = nn.CrossEntropyLoss(weight=self.normed_weights)(y_hat, y)
+        else:
+            loss = nn.CrossEntropyLoss()(y_hat, y)
 
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat, y))
