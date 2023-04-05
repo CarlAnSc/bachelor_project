@@ -7,24 +7,10 @@ import matplotlib.pyplot as plt
 import wandb
 import numpy as np
 
-labels = [
-    "background",
-    "brighter",
-    "color",
-    "darker",
-    "larger",
-    "multiple_objects",
-    "object_blocking",
-    "partial_view",
-    "pattern",
-    "person_blocking",
-    "pose",
-    "shape",
-    "smaller",
-    "style",
-    "subcategory",
-    "texture",
-]
+labels = {4: ['background', 'color', 'pattern', 'pose'] ,
+    16: ["background","brighter","color","darker","larger","multiple_objects","object_blocking","partial_view",
+    "pattern","person_blocking","pose","shape","smaller","style","subcategory","texture",
+]}
 
 
 # Define the ResNet-50 model
@@ -53,6 +39,8 @@ class ResNet(pl.LightningModule):
         print(f"Device is {self.device}")
         if self.args.weighted_loss:
            self.normed_weights = normed_weights.to('cuda')
+
+        self.labels = labels[num_classes]
 
     def forward(self, x):
         return self.resnet50(x)
@@ -87,7 +75,7 @@ class ResNet(pl.LightningModule):
 
         # log to wandb
         f, ax = plt.subplots(figsize=(15, 10))
-        sns.heatmap(confmat, ax=ax, annot=True, xticklabels=labels, yticklabels=labels)
+        sns.heatmap(confmat, ax=ax, annot=True, xticklabels=self.labels, yticklabels=self.labels)
         ax.set_xlabel("Predicted labels", size=15)
         ax.set_ylabel("True labels", size=15)
         ax.set_title(f"Confusion Matrix with sum {torch.sum(confmat)}", size=15)
