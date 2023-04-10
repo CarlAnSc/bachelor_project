@@ -22,7 +22,7 @@ def main(args):
     trainer = pl.Trainer(
         accelerator="auto", max_epochs=args.epochs, logger=wandb_logger
     )
-    annotation_path = "data/annotations/"
+    annotation_path = "bachelor_project/data/annotations/"
 
     train_data = MultiLabel(
         "train", args.path, annotation_path, transform=ValTransforms()
