@@ -11,9 +11,27 @@ from src.models.ResNet50 import ResNet
 # TODO: Net dataset, 4 classes (background, color, pattern, pose)
 
 
-class_distribution = {16:[15441, 45, 6476, 125, 157, 40, 78, 678, 6571, 61, 16080, 696, 1473, 45, 614, 286],
-4: [15441, 6476, 6571, 16080]}
-
+class_distribution = {
+    16: [
+        15441,
+        45,
+        6476,
+        125,
+        157,
+        40,
+        78,
+        678,
+        6571,
+        61,
+        16080,
+        696,
+        1473,
+        45,
+        614,
+        286,
+    ],
+    4: [15441, 6476, 6571, 16080],
+}
 
 
 def main(args):
@@ -26,7 +44,7 @@ def main(args):
     wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
     wandb_logger.experiment.config.update(args)
-
+    print(f"WEIGHTED LOSS ER: {args.weighted_loss}")
     # Define the PyTorch Lightning trainer
     trainer = pl.Trainer(
         accelerator="auto", max_epochs=args.epochs, logger=wandb_logger
@@ -69,8 +87,15 @@ def main(args):
 
     # Initialize the ResNet model
     if args.weighted_loss:
-        normed_weights = torch.FloatTensor([1 - (x / sum(class_distribution[number_of_classes])) for x in class_distribution[number_of_classes]])
-        resnet_model = ResNet(args, num_classes=number_of_classes, normed_weights=normed_weights)
+        normed_weights = torch.FloatTensor(
+            [
+                1 - (x / sum(class_distribution[number_of_classes]))
+                for x in class_distribution[number_of_classes]
+            ]
+        )
+        resnet_model = ResNet(
+            args, num_classes=number_of_classes, normed_weights=normed_weights
+        )
     else:
         resnet_model = ResNet(args, num_classes=number_of_classes)
     # Train the model
