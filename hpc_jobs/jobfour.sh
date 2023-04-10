@@ -32,6 +32,6 @@ module load cuda/11.7
 cd /work3/s204162/
 source bachelor_project/venv/bin/activate
 python bachelor_project/src/models/train_model.py \
---path /work3/s204162/data/TopFactor/ \
---epochs 50 --batch_size 64 --lr 1e-5 --weight_decay 0.0005 \
---momentum 0.9 --optimizer sgd --bootstrap True
+--path /work3/s204162/data/FourClass/ \
+--epochs 60 --batch_size 128 --lr 1e-5 --weight_decay 0.0005 \
+--momentum 0.9 --optimizer sgd
