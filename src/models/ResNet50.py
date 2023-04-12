@@ -50,7 +50,7 @@ class ResNet(pl.LightningModule):
         self.accuracy3 = torchmetrics.Accuracy(
             task="multiclass", num_classes=num_classes, top_k=3
         )
-        self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes)
+        self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes, average="micro")
         self.confusion_matrix = torchmetrics.ConfusionMatrix(
             task="multiclass", num_classes=num_classes, normalize="true"
         )
