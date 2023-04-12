@@ -7,10 +7,27 @@ import matplotlib.pyplot as plt
 import wandb
 import numpy as np
 
-labels = {4: ['background', 'color', 'pattern', 'pose'] ,
-    16: ["background","brighter","color","darker","larger","multiple_objects","object_blocking","partial_view",
-    "pattern","person_blocking","pose","shape","smaller","style","subcategory","texture",
-]}
+labels = {
+    4: ["background", "color", "pattern", "pose"],
+    16: [
+        "background",
+        "brighter",
+        "color",
+        "darker",
+        "larger",
+        "multiple_objects",
+        "object_blocking",
+        "partial_view",
+        "pattern",
+        "person_blocking",
+        "pose",
+        "shape",
+        "smaller",
+        "style",
+        "subcategory",
+        "texture",
+    ],
+}
 
 
 # Define the ResNet-50 model
@@ -22,8 +39,11 @@ class ResNet(pl.LightningModule):
             "resnet50",
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
-        self.resnet50.fc = nn.Linear(int(2048), int(num_classes))
+        # TODO Add dropout
+        #self.resnet50.fc = nn.Linear(int(2048), int(num_classes))
         # self.resnet50.fc = nn.Linear(int(2048), int(16))
+        self.resnet50.fc = nn.Sequential(nn.Dropout(0.5), nn.Linear(int(2048), int(num_classes)))
+        
         self.accuracy1 = torchmetrics.Accuracy(
             task="multiclass", num_classes=num_classes
         )
@@ -38,7 +58,7 @@ class ResNet(pl.LightningModule):
         self.register_buffer
         print(f"Device is {self.device}")
         if self.args.weighted_loss:
-           self.normed_weights = normed_weights.to('cuda')
+            self.normed_weights = normed_weights.to("cuda")
 
         self.labels = labels[num_classes]
 
@@ -75,7 +95,9 @@ class ResNet(pl.LightningModule):
 
         # log to wandb
         f, ax = plt.subplots(figsize=(15, 10))
-        sns.heatmap(confmat, ax=ax, annot=True, xticklabels=self.labels, yticklabels=self.labels)
+        sns.heatmap(
+            confmat, ax=ax, annot=True, xticklabels=self.labels, yticklabels=self.labels
+        )
         ax.set_xlabel("Predicted labels", size=15)
         ax.set_ylabel("True labels", size=15)
         ax.set_title(f"Confusion Matrix with sum {torch.sum(confmat)}", size=15)
