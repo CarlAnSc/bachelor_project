@@ -29,6 +29,7 @@ class ResNetMultiLabel(pl.LightningModule):
             task="multilabel", num_labels=num_labels, top_k=3
         )
         self.f1_score = torchmetrics.F1Score(task="multilabel", num_labels=num_labels, average="micro")
+        self.f1_multi = torchmetrics.F1Score(task = "multilabel", num_labels=num_labels, average=None)
         self.threshold = 0.5
         self.args = args
         self.register_buffer
@@ -54,13 +55,24 @@ class ResNetMultiLabel(pl.LightningModule):
 
         y_hat_thresh = torch.where(y_hat > self.threshold, 1, 0)
 
+        self.f1_multi.update(preds=y_hat_thresh, target=y)
+
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat_thresh, y))
         self.log("val_acc3", self.accuracy3(y_hat_thresh, y))
         self.log("val_f1", self.f1_score(y_hat_thresh, y))
 
     def on_validation_epoch_end(self):
-        pass
+        # Get the F1 score for each class
+        f1_scores_per_class = self.f1_multi.compute().tolist()
+
+        # Create a bar plot of F1 scores
+        fig, ax = plt.subplots()
+        ax.bar(range(len(f1_scores_per_class)), f1_scores_per_class)
+        ax.set_xlabel('Class')
+        ax.set_ylabel('F1 Score')
+        ax.set_title('F1 Score for each Class')
+        self.logger.experiment.log({"plot": wandb.Image(fig)})
 
     def configure_optimizers(self):
         # Choose optimizer from dict
