@@ -72,7 +72,7 @@ class ResNetMultiLabel(pl.LightningModule):
         ax.set_xlabel('Class')
         ax.set_ylabel('F1 Score')
         ax.set_title('F1 Score for each Class')
-        self.logger.experiment.log({"plot": wandb.Image(fig)})
+        self.logger.experiment.log({"plot": [wandb.Image(fig)]})
 
     def configure_optimizers(self):
         # Choose optimizer from dict
