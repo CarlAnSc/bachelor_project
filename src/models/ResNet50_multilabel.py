@@ -64,7 +64,7 @@ class ResNetMultiLabel(pl.LightningModule):
 
     def on_validation_epoch_end(self):
         # Get the F1 score for each class
-        f1_scores_per_class = self.f1_multi.compute().tolist()
+        f1_scores_per_class = self.f1_multi.compute().cpu().tolist()
 
         # Create a bar plot of F1 scores
         fig, ax = plt.subplots()
