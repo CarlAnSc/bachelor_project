@@ -17,10 +17,10 @@ class ResNetMultiLabel(pl.LightningModule):
             "resnet50",
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
-        # TODO Fix final layer
-        self.resnet50.fc = nn.Linear(
+
+        self.resnet50.fc = nn.Sequential(nn.Dropout(p=0.5), nn.Linear(
             in_features=self.resnet50.fc.in_features, out_features=num_labels
-        )
+        ))
         self.sigm = nn.Sigmoid()
 
         # self.resnet50.fc = nn.Linear(int(2048), int(16))
@@ -28,11 +28,11 @@ class ResNetMultiLabel(pl.LightningModule):
         self.accuracy3 = torchmetrics.Accuracy(
             task="multilabel", num_labels=num_labels, top_k=3
         )
-        self.f1_score = torchmetrics.F1Score(task="multilabel", num_labels=num_labels)
+        self.f1_score = torchmetrics.F1Score(task="multilabel", num_labels=num_labels, average="micro")
         self.threshold = 0.5
         self.args = args
         self.register_buffer
-        print(f"Device is {self.device}")
+        self.normed_weights = normed_weights.to("cuda")
 
     def forward(self, x):
         return self.sigm(self.resnet50(x))
@@ -40,22 +40,20 @@ class ResNetMultiLabel(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = nn.BCELoss()(y_hat, y.type(torch.float))
-        self.log("train_loss", loss)
+        loss = nn.BCELoss(reduction="none")(y_hat, y.type(torch.float))
+        loss = torch.mean(loss * self.normed_weights.unsqueeze(0))
 
-        y_hat_thresh = torch.where(y_hat > self.threshold, 1, 0)
-        print(y)
-        print()
-        print(y_hat_thresh)
-        print(self.accuracy1(y_hat_thresh, y))
+        self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = nn.BCELoss()(y_hat, y.type(torch.float))
+        loss = nn.BCELoss(reduction="none")(y_hat, y.type(torch.float))
+        loss = torch.mean(loss * self.normed_weights.unsqueeze(0))
 
         y_hat_thresh = torch.where(y_hat > self.threshold, 1, 0)
+
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat_thresh, y))
         self.log("val_acc3", self.accuracy3(y_hat_thresh, y))

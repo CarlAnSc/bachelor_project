@@ -7,6 +7,32 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 from src.data.dataloader import MultiLabel, ValTransforms
 from src.models.ResNet50_multilabel import ResNetMultiLabel
 
+class_distribution = {
+    16: [
+        15441,
+        45,
+        6476,
+        125,
+        157,
+        40,
+        78,
+        678,
+        6571,
+        61,
+        16080,
+        696,
+        1473,
+        45,
+        614,
+        286,
+    ],
+    4: [15441, 6476, 6571, 16080],
+}
+
+normed_weights = torch.FloatTensor(
+    [1 - (x / sum(class_distribution[16])) for x in class_distribution[16]]
+)
+
 
 def main(args):
     dotenvpath = find_dotenv()
@@ -14,6 +40,7 @@ def main(args):
     os.environ["WANDB_API_KEY"] = os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
+    torch.set_float32_matmul_precision('medium')
     # Log experiment with WandB
     wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
@@ -45,7 +72,7 @@ def main(args):
     )
     # Initialize the ResNet model
 
-    resnet_model = ResNetMultiLabel(args, num_labels=16)
+    resnet_model = ResNetMultiLabel(args, normed_weights=normed_weights, num_labels=16)
     # Train the model
     trainer.fit(resnet_model, train_loader, val_loader)
 

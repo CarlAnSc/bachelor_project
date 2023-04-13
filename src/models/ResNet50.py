@@ -56,7 +56,6 @@ class ResNet(pl.LightningModule):
         )
         self.args = args
         self.register_buffer
-        print(f"Device is {self.device}")
         if self.args.weighted_loss:
             self.normed_weights = normed_weights.to("cuda")
 
