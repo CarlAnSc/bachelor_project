@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import wandb
 import numpy as np
 
+labels = ["multiple objects","background","color","brighter","darker","style","larger","smaller","object blocking","person blocking","partial view","pattern","pose","shape","subcategory","texture"]
 
 # Define the ResNet-50 model
 class ResNetMultiLabel(pl.LightningModule):
@@ -34,6 +35,7 @@ class ResNetMultiLabel(pl.LightningModule):
         self.args = args
         self.register_buffer
         self.normed_weights = normed_weights.to("cuda")
+        self.labels = labels
 
     def forward(self, x):
         return self.sigm(self.resnet50(x))
@@ -68,11 +70,17 @@ class ResNetMultiLabel(pl.LightningModule):
 
         # Create a bar plot of F1 scores
         fig, ax = plt.subplots()
-        ax.bar(range(len(f1_scores_per_class)), f1_scores_per_class)
-        ax.set_xlabel('Class')
-        ax.set_ylabel('F1 Score')
-        ax.set_title('F1 Score for each Class')
-        self.logger.experiment.log({"plot": [wandb.Image(fig)]})
+        ax.barh(range(len(f1_scores_per_class)), f1_scores_per_class, color="#2a9d8f")
+        ax.set_xlabel('F1 score')
+        ax.tick_params(axis='both', which='major', labelsize=8)
+        ax.tick_params(axis='both', which='minor', labelsize=8)
+        ax.set_yticks(np.arange(len(self.labels)), labels=self.labels)
+        ax.set_ylabel('Class')
+        ax.set_title('F1 Score for each label')
+        fig.tight_layout()
+        fig.savefig('f1.png')
+        fig.show()
+        self.logger.experiment.log({"plot": wandb.Image('f1.png')})
 
     def configure_optimizers(self):
         # Choose optimizer from dict
