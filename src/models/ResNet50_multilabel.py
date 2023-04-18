@@ -7,7 +7,25 @@ import matplotlib.pyplot as plt
 import wandb
 import numpy as np
 
-labels = ["multiple objects","background","color","brighter","darker","style","larger","smaller","object blocking","person blocking","partial view","pattern","pose","shape","subcategory","texture"]
+labels = [
+    "multiple objects",
+    "background",
+    "color",
+    "brighter",
+    "darker",
+    "style",
+    "larger",
+    "smaller",
+    "object blocking",
+    "person blocking",
+    "partial view",
+    "pattern",
+    "pose",
+    "shape",
+    "subcategory",
+    "texture",
+]
+
 
 # Define the ResNet-50 model
 class ResNetMultiLabel(pl.LightningModule):
@@ -19,9 +37,12 @@ class ResNetMultiLabel(pl.LightningModule):
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
 
-        self.resnet50.fc = nn.Sequential(nn.Dropout(p=0.5), nn.Linear(
-            in_features=self.resnet50.fc.in_features, out_features=num_labels
-        ))
+        self.resnet50.fc = nn.Sequential(
+            nn.Dropout(p=0.5),
+            nn.Linear(
+                in_features=self.resnet50.fc.in_features, out_features=num_labels
+            ),
+        )
         self.sigm = nn.Sigmoid()
 
         # self.resnet50.fc = nn.Linear(int(2048), int(16))
@@ -29,8 +50,15 @@ class ResNetMultiLabel(pl.LightningModule):
         self.accuracy3 = torchmetrics.Accuracy(
             task="multilabel", num_labels=num_labels, top_k=3
         )
-        self.f1_score = torchmetrics.F1Score(task="multilabel", num_labels=num_labels, average="micro")
-        self.f1_multi = torchmetrics.F1Score(task = "multilabel", num_labels=num_labels, average=None)
+        self.f1_score_micro = torchmetrics.F1Score(
+            task="multilabel", num_labels=num_labels, average="micro"
+        )
+        self.f1_score_macro = torchmetrics.F1Score(
+            task="multilabel", num_labels=num_labels, average="macro"
+        )
+        self.f1_multi = torchmetrics.F1Score(
+            task="multilabel", num_labels=num_labels, average=None
+        )
         self.threshold = 0.5
         self.args = args
         self.register_buffer
@@ -62,7 +90,8 @@ class ResNetMultiLabel(pl.LightningModule):
         self.log("val_loss", loss)
         self.log("val_acc1", self.accuracy1(y_hat_thresh, y))
         self.log("val_acc3", self.accuracy3(y_hat_thresh, y))
-        self.log("val_f1", self.f1_score(y_hat_thresh, y))
+        self.log("val_f1_micro", self.f1_score_micro(y_hat_thresh, y))
+        self.log("val_f1_macro", self.f1_score_macro(y_hat_thresh, y))
 
     def on_validation_epoch_end(self):
         # Get the F1 score for each class
@@ -71,16 +100,16 @@ class ResNetMultiLabel(pl.LightningModule):
         # Create a bar plot of F1 scores
         fig, ax = plt.subplots()
         ax.barh(range(len(f1_scores_per_class)), f1_scores_per_class, color="#2a9d8f")
-        ax.set_xlabel('F1 score')
-        ax.tick_params(axis='both', which='major', labelsize=8)
-        ax.tick_params(axis='both', which='minor', labelsize=8)
+        ax.set_xlabel("F1 score")
+        ax.tick_params(axis="both", which="major", labelsize=8)
+        ax.tick_params(axis="both", which="minor", labelsize=8)
         ax.set_yticks(np.arange(len(self.labels)), labels=self.labels)
-        ax.set_ylabel('Class')
-        ax.set_title('F1 Score for each label')
+        ax.set_ylabel("Class")
+        ax.set_title("F1 Score for each label")
         fig.tight_layout()
-        fig.savefig('f1.png')
+        fig.savefig("f1.png")
         fig.show()
-        self.logger.experiment.log({"plot": wandb.Image('f1.png')})
+        self.logger.experiment.log({"plot": wandb.Image("f1.png")})
 
     def configure_optimizers(self):
         # Choose optimizer from dict
