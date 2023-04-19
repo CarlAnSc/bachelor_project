@@ -13,9 +13,9 @@ RUN pip install -r requirements_app.txt --no-cache-dir
 
 
 # copy app
-COPY App App/
-COPY Data_Analysis/imgs_for_app.csv Data_Analysis/imgs_for_app.csv
-COPY Data_Analysis/imgs_for_intro.csv Data_Analysis/imgs_for_intro.csv
+COPY labeling_web_app App/
+COPY metalabel_objectivity/imgs_for_app.csv Data_Analysis/imgs_for_app.csv
+COPY multilabel_testing.ipynb/imgs_for_intro.csv Data_Analysis/imgs_for_intro.csv
 
 # Install source as package
 #---COPY setup.py setup.py

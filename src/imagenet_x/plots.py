@@ -953,6 +953,7 @@ def model_comparison(
         xlim = g.get_xlim()
         plt.errorbar(x, y, yerr=yerr, linewidth=0, elinewidth=1.8, alpha=1, c=".35")
         plt.xlim(xlim)
+        
     
     if fname is not None:
         plt.savefig(fname, bbox_inches="tight", dpi=300, transparent=True)
@@ -976,6 +977,7 @@ def plot_bar_plot(data_to_display, x="Factor", y=None, hue=None, hue_order=None,
     plt.xticks(rotation=30, ha="right")
     plt.xlabel("")
     plt.ylabel(y, fontsize=18)
+    plt.title('Error ratio for different pre-trained models on ImageNet-X')
     sns.despine()
     # plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(1.0))
     if y == "Error ratio":
