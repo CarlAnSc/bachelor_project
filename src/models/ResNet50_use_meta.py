@@ -34,15 +34,15 @@ class ResNet_withMeta(pl.LightningModule):
         # TODO change model here to use meta data (size 16) with size 1000 just before fully connected layer
 
 
-        self.accuracy1 = torchmetrics.Accuracy(
-            task="multiclass", num_classes=num_classes
-        )
-        self.accuracy3 = torchmetrics.Accuracy(
-            task="multiclass", num_classes=num_classes, top_k=3
-        )
-        self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes, average="micro")
+        #self.accuracy1 = torchmetrics.Accuracy(
+        #    task="multiclass", num_classes=num_classes
+        #)
+        #self.accuracy3 = torchmetrics.Accuracy(
+        #    task="multiclass", num_classes=num_classes, top_k=3
+        #)
+        #self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes, average="micro")
 
-        self.register_buffer
+        #self.register_buffer
         
 
     def forward(self, img, meta):
@@ -54,23 +54,23 @@ class ResNet_withMeta(pl.LightningModule):
         return self.classifier(features)
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
+        img, meta, y = batch
+        y_hat = self(img, meta)
         loss = nn.CrossEntropyLoss()(y_hat, y)
 
-        self.log("train_loss", loss)
+        #self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
+        img, meta, y = batch
+        y_hat = self(img, meta)
         loss = nn.CrossEntropyLoss()(y_hat, y)
 
 
-        self.log("val_loss", loss)
-        self.log("val_acc1", self.accuracy1(y_hat, y))
-        self.log("val_acc3", self.accuracy3(y_hat, y))
-        self.log("val_f1", self.f1_score(y_hat, y))
+        #self.log("val_loss", loss)
+        #self.log("val_acc1", self.accuracy1(y_hat, y))
+        #self.log("val_acc3", self.accuracy3(y_hat, y))
+        #self.log("val_f1", self.f1_score(y_hat, y))
 
 
     def on_validation_epoch_end(self):
@@ -78,17 +78,7 @@ class ResNet_withMeta(pl.LightningModule):
 
     def configure_optimizers(self):
         # Choose optimizer from dict
-        dictOptimizer = {
-            "adam": torch.optim.Adam(
-                self.parameters(), lr=0.0001, weight_decay=0.0005
-            ),
-            "sgd": torch.optim.SGD(
-                self.parameters(),
-                lr=0.0001,
-                weight_decay=0.0005,
-                momentum=0.9,
-            ),
-        }
+        
         optimizer = torch.optim.SGD(
                 self.parameters(),
                 lr=0.0001,

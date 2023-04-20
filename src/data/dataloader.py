@@ -54,3 +54,12 @@ class MultiLabel(datasets.ImageFolder):
         target = target.astype(float)
         target = torch.from_numpy(target)
         return sample, target
+
+class UseMetaData(datasets.ImageFolder):
+    def __init__(self, folder_path, *args, **kwargs):
+        super().__init__(folder_path, *args, **kwargs)
+        pass
+        
+    def __getitem__(self, index: int):
+        # TODO: implement getting 16 vector from metadata
+        pass
