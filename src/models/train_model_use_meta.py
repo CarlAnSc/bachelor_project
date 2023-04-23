@@ -24,9 +24,11 @@ def main(args):
     trainer = pl.Trainer(
         accelerator="auto", max_epochs=50     #args.epochs    #, logger=wandb_logger
     )
-
-    train_data = UseMetaData(args.path + "train/", transform=ValTransforms())
-    val_data = UseMetaData(args.path + "val/", transform=ValTransforms())
+    annotation_path = "bachelor_project/data/annotations/"
+    train_data = UseMetaData(
+        "train", args.path, annotation_path, transform=ValTransforms()
+    )
+    val_data = UseMetaData("val", args.path, annotation_path, transform=ValTransforms())
     number_of_classes = len(train_data.classes)
 
         # Create data loaders
