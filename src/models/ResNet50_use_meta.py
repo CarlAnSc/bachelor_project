@@ -10,7 +10,7 @@ import numpy as np
 
 # Define the ResNet-50 model
 class ResNet_withMeta(pl.LightningModule):
-    def __init__(self, num_classes=1000):
+    def __init__(self, args, num_classes=1000):
         super().__init__()
         #self.resnet50 = torch.hub.load(
         #    "pytorch/vision:v0.9.0",
@@ -30,48 +30,46 @@ class ResNet_withMeta(pl.LightningModule):
         self.meta_backbone = nn.Linear(16, 16)
 
         self.classifier = nn.Linear(2048 + 16, num_classes)
+        self.args = args
         
         # TODO change model here to use meta data (size 16) with size 1000 just before fully connected layer
 
 
-        #self.accuracy1 = torchmetrics.Accuracy(
-        #    task="multiclass", num_classes=num_classes
-        #)
-        #self.accuracy3 = torchmetrics.Accuracy(
-        #    task="multiclass", num_classes=num_classes, top_k=3
-        #)
-        #self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes, average="micro")
-
-        #self.register_buffer
+        self.accuracy1 = torchmetrics.Accuracy(
+           task="multiclass", num_classes=num_classes
+        )
+        self.accuracy3 = torchmetrics.Accuracy(
+           task="multiclass", num_classes=num_classes, top_k=3
+        )
+        self.f1_score = torchmetrics.F1Score(task="multiclass", num_classes=num_classes, average="micro")
         
 
     def forward(self, img, meta):
 
         features_img = self.img_backbone(img)  # [N, 2048]
         features_meta = self.meta_backbone(meta)  # [N, n_features]
-        features = torch.cat((features_img, features_meta), 0)
+        features = torch.cat((features_img, features_meta), 1)
 
         return self.classifier(features)
 
     def training_step(self, batch, batch_idx):
-        img, meta, y = batch
+        img, meta, y  = batch
         y_hat = self(img, meta)
+        print(y_hat.shape, y_hat)
         loss = nn.CrossEntropyLoss()(y_hat, y)
 
-        #self.log("train_loss", loss)
+        self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        img, meta, y = batch
+        img, meta, y  = batch
         y_hat = self(img, meta)
         loss = nn.CrossEntropyLoss()(y_hat, y)
 
-
-        #self.log("val_loss", loss)
-        #self.log("val_acc1", self.accuracy1(y_hat, y))
-        #self.log("val_acc3", self.accuracy3(y_hat, y))
-        #self.log("val_f1", self.f1_score(y_hat, y))
-
+        self.log("val_loss", loss)
+        self.log("val_acc1", self.accuracy1(y_hat, y))
+        self.log("val_acc3", self.accuracy3(y_hat, y))
+        self.log("val_f1", self.f1_score(y_hat, y))
 
     def on_validation_epoch_end(self):
         pass
@@ -79,15 +77,25 @@ class ResNet_withMeta(pl.LightningModule):
     def configure_optimizers(self):
         # Choose optimizer from dict
         
-        optimizer = torch.optim.SGD(
-                self.parameters(),
-                lr=0.0001,
-                weight_decay=0.0005,
-                momentum=0.9 )
-        
+        dictOptimizer = {
+                "adam": torch.optim.Adam(
+                    self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
+                ),
+                "sgd": torch.optim.SGD(
+                    self.parameters(),
+                    lr=self.args.lr,
+                    weight_decay=self.args.weight_decay,
+                    momentum=self.args.momentum,
+                ),
+            }
+        optimizer = dictOptimizer[self.args.optimizer]
+        # optimizer = torch.optim.Adam(
+        #    self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
+        # )
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=50
+            optimizer, T_max=self.args.epochs
         )  # StepLR -> cosine
         return [optimizer], [scheduler]
+
 
 

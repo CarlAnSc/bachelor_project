@@ -93,12 +93,10 @@ class UseMetaData(datasets.ImageFolder):
             sample = self.transform(sample)
 
         filename = os.path.split(path)[1]
-        # print(filename)
         # overwrite multilabel target:
-        meta_labels = self.label_df[self.label_df.file_name == filename].to_numpy()[0][
-            2:18
-        ]
-        meta_labels = target.astype(float)
+        meta_labels = self.label_df[self.label_df.file_name == filename].to_numpy()[0]
+        meta_labels = meta_labels[2:18]
+        meta_labels = meta_labels.astype(float)
         meta_labels = torch.from_numpy(meta_labels)
-
-        return sample, target, meta_labels
+        meta_labels = meta_labels.type(torch.FloatTensor)
+        return sample, meta_labels, target

@@ -5,60 +5,53 @@ import os
 from dotenv import load_dotenv, find_dotenv
 from torch.utils.data import DataLoader, RandomSampler
 from src.data.dataloader import UseMetaData, ValTransforms
-from src.models.ResNet50 import ResNet
+from src.models.ResNet50_use_meta import ResNet_withMeta
 
 
 
 def main(args):
-    #dotenvpath = find_dotenv()
-    #load_dotenv(dotenvpath)
-    #os.environ["WANDB_API_KEY"] = os.getenv("WANDB_API_KEY")
+    dotenvpath = find_dotenv()
+    load_dotenv(dotenvpath)
+    os.environ["WANDB_API_KEY"] = os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
+    
     # Log experiment with WandB
-    #wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
+    wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
-    #wandb_logger.experiment.config.update(args)
-    #print(f"WEIGHTED LOSS ER: {args.weighted_loss}")
+    wandb_logger.experiment.config.update(args)
     # Define the PyTorch Lightning trainer
     trainer = pl.Trainer(
-        accelerator="auto", max_epochs=50     #args.epochs    #, logger=wandb_logger
+        accelerator="auto", max_epochs=args.epochs, logger=wandb_logger
     )
     annotation_path = "bachelor_project/data/annotations/"
     train_data = UseMetaData(
         "train", args.path, annotation_path, transform=ValTransforms()
     )
     val_data = UseMetaData("val", args.path, annotation_path, transform=ValTransforms())
+
+    # Create data loaders
     number_of_classes = len(train_data.classes)
 
-        # Create data loaders
-        
-    sampler = RandomSampler(replacement=True
-    )
     train_loader = DataLoader(
         train_data,
-        batch_size=64,          #args.batch_size,
-        num_workers=8,          #args.num_workers,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
         pin_memory=True,
-        sampler=sampler,
+        # sampler=sampler,
     )
     
     val_loader = DataLoader(
         val_data,
-        batch_size=64,           #args.batch_size,
-        num_workers=8,          #args.num_workers,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
         pin_memory=True,
     )
-    # test_loader = DataLoader(test_data, batch_size=32, num_workers=8, pin_memory=True)
 
     # Initialize the ResNet model
-    
-    resnet_model = ResNet(args, num_classes=number_of_classes)
+    resnet_model = ResNet_withMeta(args, num_classes=number_of_classes)
     # Train the model
     trainer.fit(resnet_model, train_loader, val_loader)
-
-    # Evaluate the model on the test set
-    # trainer.test(resnet_model, test_loader)
 
 
 if __name__ == "__main__":
