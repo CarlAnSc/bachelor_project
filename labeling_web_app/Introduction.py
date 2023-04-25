@@ -10,7 +10,7 @@ import pandas as pd
 
 #@st.experimental_memo
 st.set_page_config(layout="wide")
-df_intro = pd.read_csv('Data_Analysis/imgs_for_intro.csv')
+df_intro = pd.read_csv('metalabel_objectivity/imgs_for_intro.csv')
 
 url = 'https://storage.cloud.google.com/bachebucket'
 

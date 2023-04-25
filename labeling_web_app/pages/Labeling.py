@@ -27,15 +27,15 @@ url = 'https://storage.cloud.google.com/bachebucket'
 ex_url = '/Images/example_imgs/'
 base_url = '/Images/anno_imgs/'
 
-EXAMPLE_PATH = "App/Images/example_imgs"
-BASE_PATH = "App/Images/anno_imgs"
+EXAMPLE_PATH = "labeling_web_app/Images/example_imgs"
+BASE_PATH = "labeling_web_app/Images/anno_imgs"
 
 OPTIONS = ["1 Pose", "2 Partial view", "3 Object blocking", "4 Person blocking",
             "5 Multiple objects", "6 Smaller", "7 Larger", "8 Brighter", "9 Darker",
             "10 Background", "11 Color", "12 Shape", "13 Texture", "14 Pattern",
             "15 Style", "16 Subcategory"]
 
-df_anno2examples = pd.read_csv('Data_Analysis/imgs_for_app.csv')
+df_anno2examples = pd.read_csv('metalabel_objectivity/imgs_for_app.csv')
 
 if "annotations" not in state:
     state.annotations = {}
