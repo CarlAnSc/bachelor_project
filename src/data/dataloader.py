@@ -6,6 +6,10 @@ import torch
 
 
 class TopFactor(datasets.ImageFolder):
+    """
+    TopFactor dataset, just uses ImageFolder on folder path, that is split into class folders.
+    """
+
     def __init__(self, folder_path, *args, **kwargs):
         super().__init__(folder_path, *args, **kwargs)
 
@@ -25,6 +29,11 @@ def ValTransforms():
 
 
 class MultiLabel(datasets.ImageFolder):
+    """
+    MultiLabel dataloader for our own TopFactor dataset.
+    Takes the path of the data.
+    """
+
     def __init__(self, type_str, folder_path, annotations_path, *args, **kwargs):
         self.type = type_str
         super().__init__(folder_path + self.type, *args, **kwargs)
@@ -55,7 +64,12 @@ class MultiLabel(datasets.ImageFolder):
         target = torch.from_numpy(target)
         return sample, target
 
+
 class UseMetaData(datasets.ImageFolder):
+    """
+    Combined dataset for using metalabels with the ImageNet Dataset.
+    """
+
     def __init__(self, type_str, folder_path, annotations_path, *args, **kwargs):
         self.type = type_str
         super().__init__(folder_path + self.type, *args, **kwargs)
@@ -81,8 +95,10 @@ class UseMetaData(datasets.ImageFolder):
         filename = os.path.split(path)[1]
         # print(filename)
         # overwrite multilabel target:
-        meta_labels = self.label_df[self.label_df.file_name == filename].to_numpy()[0][2:18]
+        meta_labels = self.label_df[self.label_df.file_name == filename].to_numpy()[0][
+            2:18
+        ]
         meta_labels = target.astype(float)
-        meta_labels = torch.from_numpy(target)
-        
+        meta_labels = torch.from_numpy(meta_labels)
+
         return sample, target, meta_labels

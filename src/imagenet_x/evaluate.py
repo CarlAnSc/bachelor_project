@@ -27,19 +27,36 @@ try:
     from IPython.display import HTML
 except ImportError:
     import warnings
+
     warn("IPython not installed, cannot display images")
-    
+
 from src.imagenet_x import load_annotations, FACTORS
 
 
-class ImageNetXImageFolder(datasets.Imag    eFolder):
+class ImageNetXImageFolder(datasets.ImageFolder):
     """Loads ImageNetX annotations along with Imagenet validation samples"""
-    
-    def __init__(self, imagenet_path, *args, which_factor="top", partition="val", filter_prototypes=True, **kwargs):
+
+    def __init__(
+        self,
+        imagenet_path,
+        *args,
+        which_factor="top",
+        partition="val",
+        filter_prototypes=True,
+        **kwargs,
+    ):
         super().__init__(imagenet_path, *args, **kwargs)
-        self.annotations_ = load_annotations(which_factor=which_factor, partition=partition, filter_prototypes=filter_prototypes).set_index('file_name')
+        self.annotations_ = load_annotations(
+            which_factor=which_factor,
+            partition=partition,
+            filter_prototypes=filter_prototypes,
+        ).set_index("file_name")
         # Filter out unanotated samples
-        self.samples = [(path, label) for (path, label) in self.samples if path.split("/")[-1] in self.annotations_.index]
+        self.samples = [
+            (path, label)
+            for (path, label) in self.samples
+            if path.split("/")[-1] in self.annotations_.index
+        ]
 
     def __getitem__(self, index):
         img, target = super().__getitem__(index)
@@ -47,14 +64,32 @@ class ImageNetXImageFolder(datasets.Imag    eFolder):
         img_annotations = self.annotations_.loc[img_id]
         return img, target, img_annotations[FACTORS].values.astype(np.bool_)
         # return img, target
+
+
 class ImageNetX(datasets.ImageNet):
     """Loads ImageNetX annotations along with Imagenet validation samples"""
-    
-    def __init__(self, imagenet_path, *args, which_factor="top", partition="val", filter_prototypes=True, **kwargs):
+
+    def __init__(
+        self,
+        imagenet_path,
+        *args,
+        which_factor="top",
+        partition="val",
+        filter_prototypes=True,
+        **kwargs,
+    ):
         super().__init__(imagenet_path, split=partition, **kwargs)
-        self.annotations_ = load_annotations(which_factor=which_factor, partition=partition, filter_prototypes=filter_prototypes).set_index('file_name')
+        self.annotations_ = load_annotations(
+            which_factor=which_factor,
+            partition=partition,
+            filter_prototypes=filter_prototypes,
+        ).set_index("file_name")
         # Filter out unanotated samples
-        self.samples = [(path, label) for (path, label) in self.samples if path.split("/")[-1] in self.annotations_.index]
+        self.samples = [
+            (path, label)
+            for (path, label) in self.samples
+            if path.split("/")[-1] in self.annotations_.index
+        ]
 
     def __getitem__(self, index):
         img, target = super().__getitem__(index)
@@ -62,6 +97,7 @@ class ImageNetX(datasets.ImageNet):
         img_annotations = self.annotations_.loc[img_id]
         return img, target, img_annotations[FACTORS].values.astype(np.bool_)
         # return img, target
+
 
 def get_vanilla_transform():
     normalize = transforms.Normalize(
@@ -76,33 +112,50 @@ def get_vanilla_transform():
         ]
     )
 
+
 def format_dataset_entry(inp):
     img, label, factors = inp
-    imagenet_classes = pd.read_csv((get_annotation_path() / 'imagenet_labels.txt'), names=['class', 'name']).name.to_list()
+    imagenet_classes = pd.read_csv(
+        (get_annotation_path() / "imagenet_labels.txt"), names=["class", "name"]
+    ).name.to_list()
     label = imagenet_classes[label]
     factor = FACTORS[np.nonzero(factors)[0][0]]
     return dict(Class=label, Factor=factor, image=img)
 
+
 def image_base64(im):
     with BytesIO() as buffer:
-        im.resize((128,128)).save(buffer, 'jpeg')
+        im.resize((128, 128)).save(buffer, "jpeg")
         return base64.b64encode(buffer.getvalue()).decode()
+
 
 def image_formatter(im):
     return f'<img src="data:image/jpeg;base64,{image_base64(im)}">'
 
+
 def reshape(df, rows=3):
     length = len(df)
     cols = np.ceil(length / rows).astype(int)
-    df = df.assign(rows=np.tile(np.arange(rows), cols)[:length], 
-                   cols=np.repeat(np.arange(cols), rows)[:length]) \
-           .pivot('rows', 'cols', df.columns.tolist()) \
-           .sort_index(level=1, axis=1).droplevel(level=1, axis=1).rename_axis(None)
+    df = (
+        df.assign(
+            rows=np.tile(np.arange(rows), cols)[:length],
+            cols=np.repeat(np.arange(cols), rows)[:length],
+        )
+        .pivot("rows", "cols", df.columns.tolist())
+        .sort_index(level=1, axis=1)
+        .droplevel(level=1, axis=1)
+        .rename_axis(None)
+    )
     return df
+
 
 # sample 10 random images from the dataset with numpy indices
 def display_sample_df(dataset, nb_rows=3, nb_cols=3):
-    sample = np.random.choice(len(dataset), nb_rows*nb_cols, replace=False)
+    sample = np.random.choice(len(dataset), nb_rows * nb_cols, replace=False)
     sample_df = pd.DataFrame([format_dataset_entry(dataset[i]) for i in sample])
     sample_df = reshape(sample_df, nb_rows)
-    return HTML(sample_df.to_html(formatters={'image': image_formatter}, escape=False, index=False))
+    return HTML(
+        sample_df.to_html(
+            formatters={"image": image_formatter}, escape=False, index=False
+        )
+    )

@@ -27,11 +27,16 @@ except ImportError:
 from src.imagenet_x.utils import load_annotations, FACTORS, METACLASSES
 from src.imagenet_x.prevalence import Prevalence
 from src.imagenet_x.aggregate import spearman_corr_heatmaps
-from src.imagenet_x.model_types import model_types_map, SELFSUPERVISED_MODELS, ModelTypes
+from src.imagenet_x.model_types import (
+    model_types_map,
+    SELFSUPERVISED_MODELS,
+    ModelTypes,
+)
 
 
 def escape(l):
     return [x.replace("_", " ") for x in l]
+
 
 colors = ["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]
 
@@ -43,7 +48,9 @@ MODEL_TYPE_ORDER = [
 ]
 
 
-def factor_distribution_comparison(annotations_to_compare, fname=None, remove_underscore=True):
+def factor_distribution_comparison(
+    annotations_to_compare, fname=None, remove_underscore=True
+):
     # sns.set(style="whitegrid")
     plt.figure(figsize=(8, 1.5))
 
@@ -117,7 +124,9 @@ def factor_distribution_comparison(annotations_to_compare, fname=None, remove_un
     plt.close()
 
 
-def active_factor_distribution_comparison(annotations_to_compare, fname=None, remove_underscore=True):
+def active_factor_distribution_comparison(
+    annotations_to_compare, fname=None, remove_underscore=True
+):
     # sns.set(style="whitegrid")
     plt.figure(figsize=(5, 2))
 
@@ -163,7 +172,6 @@ def active_factor_distribution_comparison(annotations_to_compare, fname=None, re
 def plot_spearman_corr_heatmap(
     spearman, pval, spearman_threshold=0.0, pval_threshold=0.01, fname=None
 ):
-
     mask_factor_metaclass = get_mask_from_corr_matrix(
         pval.loc[FACTORS, METACLASSES].values,
         spearman.loc[FACTORS, METACLASSES].values,
@@ -268,7 +276,6 @@ def plot_scatter_reg(
     annotations=None,
     **kwargs,
 ):
-
     ax = plt.gca()
     sns.scatterplot(
         data=data[data.model_type != "Original validation annotations"],
@@ -311,9 +318,11 @@ def extract_and_filter_by_model_type(df, model_types):
     df = df[df["model_type"].isin(model_types)]
     return df
 
+
 def set_color_palette():
     colors = ["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]
     sns.set_palette(sns.color_palette(colors))
+
 
 def factor_scatterplot(
     df,
@@ -327,7 +336,9 @@ def factor_scatterplot(
     fname=None,
     remove_underscore=True,
 ):
-    melted_accs, factor_order = melt_table(df, id_vars, var_name, value_name, remove_underscore=remove_underscore)
+    melted_accs, factor_order = melt_table(
+        df, id_vars, var_name, value_name, remove_underscore=remove_underscore
+    )
     melted_accs["Error ratio"] = (1 - melted_accs[value_name]) / (1 - melted_accs[x])
     melted_accs = melted_accs.dropna()
 
@@ -348,7 +359,7 @@ def factor_scatterplot(
         .set_index("model")
     )
 
-    set_color_palette()    
+    set_color_palette()
 
     facet = sns.FacetGrid(
         melted_accs,
@@ -453,7 +464,12 @@ def augmentation_effect(df, augmentation, measure):
 
 
 def augmentation_effect_scatter_plot_reduced(
-    all_accuracies, all_hparams, augmentation_strengths, fname, y_title="Error ratio", remove_underscore=True,
+    all_accuracies,
+    all_hparams,
+    augmentation_strengths,
+    fname,
+    y_title="Error ratio",
+    remove_underscore=True,
 ):
     colors = ["#2a9d8f", "#f4a261"]
     height = 2.2
@@ -548,7 +564,7 @@ def extract_hparams_color(accuracies):
         name = "color" if hparam == "Color strength" else hparam
         accuracies[hparam] = pd.to_numeric(
             accuracies.index.to_series().str.extract(
-                f"{name}"+r"((?:[-?[\d.]+(?:e-?\d+)?)|(?:[+-]?[0-9]*[.]?[0-9]+]))"
+                f"{name}" + r"((?:[-?[\d.]+(?:e-?\d+)?)|(?:[+-]?[0-9]*[.]?[0-9]+]))"
             )[0]
         )
 
@@ -561,7 +577,7 @@ def extract_hparams_smoothing(accuracies):
         name = "smoothing" if hparam == "Smoothing strength" else hparam
         accuracies[hparam] = pd.to_numeric(
             accuracies.index.to_series().str.extract(
-                f"{name}"+r"((?:[-?[\d.]+(?:e-?\d+)?)|(?:[+-]?[0-9]*[.]?[0-9]+]))"
+                f"{name}" + r"((?:[-?[\d.]+(?:e-?\d+)?)|(?:[+-]?[0-9]*[.]?[0-9]+]))"
             )[0]
         )
 
@@ -573,9 +589,9 @@ def extract_hparams_crop(accuracies):
     for hparam in hparams:
         name = "crop" if hparam == "Crop strength" else hparam
         accuracies[hparam] = pd.to_numeric(
-            accuracies.index.to_series().str.extract(f"{name}"+r"([+-]?[0-9]*[.]?[0-9]+)")[
-                0
-            ]
+            accuracies.index.to_series().str.extract(
+                f"{name}" + r"([+-]?[0-9]*[.]?[0-9]+)"
+            )[0]
         )
         if hparam == "Crop strength":
             accuracies[hparam] = 100 - accuracies[hparam]
@@ -893,7 +909,7 @@ def model_comparison(
     hue_order=None,
     show_significance=False,
     compact=False,
-    remove_underscore=True
+    remove_underscore=True,
 ):
     if hue_order is not None:
         comparison_df = comparison_df[comparison_df[hue].isin(hue_order)]
@@ -921,11 +937,17 @@ def model_comparison(
         p_val = comparison_df.groupby("Factor").apply(test_significance)
         signif = p_val < 0.05
         signif = signif.loc[factor_order]
-    
+
     data_to_display = comparison_df.groupby(["Factor", hue]).mean().reset_index()
-    g = plot_bar_plot(data_to_display, x="Factor", y=value, hue=hue, hue_order=hue_order, factor_order=factor_order)
-    
-    
+    g = plot_bar_plot(
+        data_to_display,
+        x="Factor",
+        y=value,
+        hue=hue,
+        hue_order=hue_order,
+        factor_order=factor_order,
+    )
+
     if show_significance:
         x = []
         xlabel = []
@@ -953,13 +975,21 @@ def model_comparison(
         xlim = g.get_xlim()
         plt.errorbar(x, y, yerr=yerr, linewidth=0, elinewidth=1.8, alpha=1, c=".35")
         plt.xlim(xlim)
-        
-    
+
     if fname is not None:
         plt.savefig(fname, bbox_inches="tight", dpi=300, transparent=True)
         plt.close()
 
-def plot_bar_plot(data_to_display, x="Factor", y=None, hue=None, hue_order=None, factor_order=None, compact=False):
+
+def plot_bar_plot(
+    data_to_display,
+    x="Factor",
+    y=None,
+    hue=None,
+    hue_order=None,
+    factor_order=None,
+    compact=False,
+):
     data_to_display = data_to_display.copy()
     if y == "Error ratio":
         data_to_display[y] = data_to_display[y] - 1
@@ -973,11 +1003,11 @@ def plot_bar_plot(data_to_display, x="Factor", y=None, hue=None, hue_order=None,
         hue_order=hue_order,
         bottom=1 if y == "Error ratio" else 0,
     )
-    
-    plt.xticks(rotation=30, ha="right")
+    plt.rcParams.update({"font.size": 18})
+    plt.xticks(rotation=40, ha="right", fontsize=18)
     plt.xlabel("")
     plt.ylabel(y, fontsize=18)
-    plt.title('Error ratio for different pre-trained models on ImageNet-X')
+    plt.title("Error ratio for different pre-trained models on ImageNet-X")
     sns.despine()
     # plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(1.0))
     if y == "Error ratio":
@@ -1032,7 +1062,7 @@ def color_coded_latex_table(accuracies, fname):
             + ")"
         ).values
         annot = ", ".join(list(annot[:4]) if positive else list(annot[-4:]))
-        return r"{\color[HTML]{" + colors[1 if positive else 3][1:] + "}" + annot+"}"
+        return r"{\color[HTML]{" + colors[1 if positive else 3][1:] + "}" + annot + "}"
 
     positive_error_ratios = (
         error_ratios.groupby(["model", "metaclass"])
@@ -1046,17 +1076,16 @@ def color_coded_latex_table(accuracies, fname):
     )
     df = pd.concat([positive_error_ratios, negative_error_ratios], axis=1)
 
-    df.columns = [
-        "\\textbf{" + x.replace("_", " ") + "}" for x in df.columns
-    ]
+    df.columns = ["\\textbf{" + x.replace("_", " ") + "}" for x in df.columns]
     df.index.names = ["\\textbf{" + x + "}" for x in df.index.names]
-    df.style.to_latex(
-        fname, hrules=True, column_format="llll"
-    )
+    df.style.to_latex(fname, hrules=True, column_format="llll")
 
 
 def specific_model_metaclasses(
-    accuracies_default_models, accuracies_default_models_metaclass, fname, remove_underscore=True
+    accuracies_default_models,
+    accuracies_default_models_metaclass,
+    fname,
+    remove_underscore=True,
 ):
     accuracies_vit_metaclass = accuracies_default_models_metaclass[
         accuracies_default_models_metaclass.model == "ViT"
@@ -1217,13 +1246,16 @@ def generate_all_plots(args):
             os.makedirs(plot_dir, exist_ok=True)
 
             accuracies_testbed = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/imagenet_testbed/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/imagenet_testbed/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
             accuracies_model_vs_human = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/modelvshuman/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/modelvshuman/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
             accuracies_default_models = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/base/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/base/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
             accuracies_model_vs_human = accuracies_model_vs_human[
                 accuracies_model_vs_human.index.isin(SELFSUPERVISED_MODELS)
@@ -1276,7 +1308,8 @@ def generate_all_plots(args):
             )
 
             accuracies_default_models_metaclasses = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/base/{error_type}/accuracies_per_factor_metaclass.csv"
+                results_dir
+                / f"val/{which_factor}_factor/base/{error_type}/accuracies_per_factor_metaclass.csv"
             )
 
             color_coded_latex_table(
@@ -1293,7 +1326,8 @@ def generate_all_plots(args):
             )
 
             accuracies_crop = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/crop/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/crop/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
 
             hparams_crop = extract_hparams_crop(accuracies_crop)
@@ -1305,13 +1339,15 @@ def generate_all_plots(args):
             ]
 
             accuracies_color = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/colorjitter/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/colorjitter/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
 
             hparams_color = extract_hparams_color(accuracies_color)
 
             accuracies_smoothing = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/gaussian_blur/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/gaussian_blur/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
 
             hparams_smoothing = extract_hparams_smoothing(accuracies_smoothing)
@@ -1324,11 +1360,13 @@ def generate_all_plots(args):
             )
 
             accuracies_color_crop = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/colorjitter_crop/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/colorjitter_crop/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
 
             accuracies_color_crop_adaptive = pd.read_csv(
-                results_dir / f"val/{which_factor}_factor/adaptive_colorjitter/{error_type}/accuracies_per_factor.csv"
+                results_dir
+                / f"val/{which_factor}_factor/adaptive_colorjitter/{error_type}/accuracies_per_factor.csv"
             ).set_index("model")
 
             comparison, comparison_df = get_augmentation_comparison_df(
@@ -1355,6 +1393,7 @@ def generate_all_plots(args):
                 fname=plot_dir / f"augment_comparison_accuracy.{args.format}",
             )
 
+
 def add_plot_args(parser):
     parser.add_argument("--plot-dir", default="plots")
     parser.add_argument("--results-dir", default="results")
@@ -1372,6 +1411,7 @@ def add_plot_args(parser):
     parser.add_argument(
         "--partitions", nargs="+", default=["train", "val"], choices=["train", "val"]
     )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
