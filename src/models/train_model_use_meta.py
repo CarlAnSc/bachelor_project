@@ -8,14 +8,13 @@ from src.data.dataloader import UseMetaData, ValTransforms
 from src.models.ResNet50_use_meta import ResNet_withMeta
 
 
-
 def main(args):
     dotenvpath = find_dotenv()
     load_dotenv(dotenvpath)
     os.environ["WANDB_API_KEY"] = os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
-    
+
     # Log experiment with WandB
     wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
@@ -38,14 +37,15 @@ def main(args):
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=True,
-        # sampler=sampler,
+        shuffle=True,
     )
-    
+
     val_loader = DataLoader(
         val_data,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=True,
+        shuffle=True,
     )
 
     # Initialize the ResNet model
