@@ -20,11 +20,18 @@ class ResNet_withMeta(pl.LightningModule):
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
         self.img_backbone.fc = nn.Identity()
-        
+
         self.meta_backbone = nn.Linear(16, 16)
+        self.meta_backbonev2 = nn.Sequential(
+            nn.linear(16, 32),
+            nn.ReLU(),
+            nn.linear(32, 32),
+            nn.ReLU(),
+            nn.linear(32, 16),
+            nn.ReLU()
+        )
 
         self.classifier = nn.Linear(2048 + 16, num_classes)
-
         self.args = args
 
         self.accuracy1 = torchmetrics.Accuracy(
@@ -37,10 +44,12 @@ class ResNet_withMeta(pl.LightningModule):
             task="multiclass", num_classes=num_classes, average="micro"
         )
 
+
     def forward(self, img, meta):
         features_img = self.img_backbone(img)  # [N, 2048]
-        features_meta = self.meta_backbone(meta)  # [N, n_features]
+        features_meta = self.meta_backbonev2(meta)  # [N, n_features]
         features = torch.cat((features_img, features_meta), 1)
+        features = nn.ReLU(features)
 
         return self.classifier(features)
 
