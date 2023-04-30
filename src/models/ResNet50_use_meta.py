@@ -19,6 +19,8 @@ class ResNet_withMeta(pl.LightningModule):
             "resnet50",
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
+        self.img_backbone.fc = nn.Identity()
+        
         self.meta_backbone = nn.Linear(16, 16)
 
         self.classifier = nn.Linear(2048 + 16, num_classes)
