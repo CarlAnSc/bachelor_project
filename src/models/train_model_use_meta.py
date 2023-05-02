@@ -77,6 +77,7 @@ if __name__ == "__main__":
         help="Momentum. Will only be used for SGD optimizer, else; ignored.",
         default=0.9,
     )
-
+    parser.add_argument("--freeze", type=bool, help="Freeze layers", default=False)
+    
     args = parser.parse_args()
     main(args)

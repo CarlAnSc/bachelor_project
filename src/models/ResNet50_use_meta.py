@@ -19,6 +19,11 @@ class ResNet_withMeta(pl.LightningModule):
             "resnet50",
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
+
+        if args.freeze:
+            for param in self.img_backbone.parameters():
+                param.requires_grad = False
+                
         self.img_backbone.fc = nn.Identity()
 
         self.meta_backbone = nn.Linear(16, 16)
@@ -43,8 +48,7 @@ class ResNet_withMeta(pl.LightningModule):
         self.f1_score = torchmetrics.F1Score(
             task="multiclass", num_classes=num_classes, average="micro"
         )
-
-
+    
     def forward(self, img, meta):
         features_img = self.img_backbone(img)  # [N, 2048]
         features_meta = self.meta_backbonev2(meta)  # [N, n_features]
@@ -58,7 +62,7 @@ class ResNet_withMeta(pl.LightningModule):
         y_hat = self(img, meta)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log("train_loss", loss)
-        
+        pdb.set_trace()
         return loss
 
     def validation_step(self, batch, batch_idx):
