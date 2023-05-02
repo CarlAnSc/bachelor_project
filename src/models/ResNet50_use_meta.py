@@ -62,7 +62,6 @@ class ResNet_withMeta(pl.LightningModule):
         y_hat = self(img, meta)
         loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log("train_loss", loss)
-        pdb.set_trace()
         return loss
 
     def validation_step(self, batch, batch_idx):
