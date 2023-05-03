@@ -11,9 +11,13 @@ dfval_multi = pd.read_json(path + 'imagenet_x_val_multi_factor.jsonl', lines=Tru
 dftrain_multi_ = dftrain_multi.iloc[:,2:18]
 dfval_multi_ = dfval_multi.iloc[:,2:18]
 df_all = pd.concat([dftrain_multi_, dfval_multi_])
+
 df_all.columns = df_all.columns.str.replace('_', ' ')
-
-
+#print(np.cov(df_all.pose, df_all.background) / (np.std(df_all.pose) * np.std(df_all.background)) )
+df_all = df_all[['pose', 'partial view', 'object blocking', 'person blocking',
+       'multiple objects', 'smaller', 'larger', 'brighter', 'darker',
+       'background', 'color', 'shape', 'texture', 'pattern', 'style',
+       'subcategory']]
 Corr = df_all.corr()
 
 mask1 = Corr.abs() < 0.1
