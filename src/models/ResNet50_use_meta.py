@@ -13,20 +13,24 @@ import pdb
 class ResNet_withMeta(pl.LightningModule):
     def __init__(self, args, num_classes=1000):
         super().__init__()
+        self.args = args
 
         self.img_backbone = torch.hub.load(
             "pytorch/vision:v0.9.0",
             "resnet50",
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
-
-        if args.freeze:
+        #Freeze parameters if freeze flag in args
+        if self.args.freeze:
             for param in self.img_backbone.parameters():
                 param.requires_grad = False
-                
+
+        #final layer of img backbone        
         self.img_backbone.fc = nn.Identity()
 
-        self.meta_backbone = nn.Linear(16, 16)
+        # meta backbone version1
+        # self.meta_backbone = nn.Linear(16, 16)
+        # meta backbone version2
         self.meta_backbonev2 = nn.Sequential(
             nn.Linear(16, 32),
             nn.ReLU(),
@@ -35,10 +39,12 @@ class ResNet_withMeta(pl.LightningModule):
             nn.Linear(32, 16),
             nn.ReLU()
         )
-        self.relu = nn.ReLU()
-        self.classifier = nn.Linear(2048 + 16, num_classes)
-        self.args = args
 
+        self.relu = nn.ReLU()
+
+        #final linear layer
+        self.classifier = nn.Linear(2048 + 16, num_classes)
+        
         self.accuracy1 = torchmetrics.Accuracy(
             task="multiclass", num_classes=num_classes
         )
@@ -102,10 +108,8 @@ class ResNet_withMeta(pl.LightningModule):
             ),
         }
         optimizer = dictOptimizer[self.args.optimizer]
-        # optimizer = torch.optim.Adam(
-        #    self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay
-        # )
+        
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=self.args.epochs
-        )  # StepLR -> cosine
+        )  
         return [optimizer], [scheduler]

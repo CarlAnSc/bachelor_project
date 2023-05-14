@@ -26,7 +26,6 @@ class ResNet_withMeta(pl.LightningModule):
                 
         self.img_backbone.fc = nn.Identity()
 
-        self.meta_backbone = nn.Linear(16, 16)
         self.meta_backbonev2 = nn.Sequential(
             nn.Linear(16, 32),
             nn.ReLU(),
@@ -35,6 +34,8 @@ class ResNet_withMeta(pl.LightningModule):
             nn.Linear(32, 16),
             nn.ReLU()
         )
+        self.meta_backbone = self.meta_backbonev2
+
         self.relu = nn.ReLU()
         self.classifier = nn.Linear(2048 + 16, num_classes)
         self.args = args

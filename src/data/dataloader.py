@@ -63,7 +63,7 @@ class MultiLabel(datasets.ImageFolder):
         target = target.astype(float)
         target = torch.from_numpy(target)
         return sample, target
-
+    
 
 class UseMetaData(datasets.ImageFolder):
     """
