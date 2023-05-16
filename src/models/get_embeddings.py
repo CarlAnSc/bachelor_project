@@ -46,9 +46,18 @@ model.eval()
 device = torch.device('cuda')
 model.to(device)
 
-dict = {}
+# Train
+train_dict = {}
 
 for i, batch in enumerate(tqdm.tqdm(train_loader)):
-    dict[i] = [model(batch[0].to(device)).cpu().detach().numpy(), batch[1].numpy(), batch[2].numpy()]
+    train_dict[i] = [model(batch[0].to(device)).cpu().detach().numpy(), batch[1].numpy(), batch[2].numpy()]
 
-pickle.dump(dict, open('/data/train_embeddings.pkl', 'wb'))
+pickle.dump(train_dict, open('/data/train_embeddings.pkl', 'wb'))
+
+##Val
+val_dict = {}
+
+for i, batch in enumerate(tqdm.tqdm(val_loader)):
+    val_dict[i] = [model(batch[0].to(device)).cpu().detach().numpy(), batch[1].numpy(), batch[2].numpy()]
+
+pickle.dump(val_dict, open('val_embeddings.pkl', 'wb'))
