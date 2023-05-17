@@ -99,4 +99,6 @@ class UseMetaData(datasets.ImageFolder):
         meta_labels = meta_labels.astype(float)
         meta_labels = torch.from_numpy(meta_labels)
         meta_labels = meta_labels.type(torch.FloatTensor)
-        return sample, meta_labels, target
+        target = self.label_df[self.label_df.file_name == filename].to_numpy()[0][1]
+        target = int(target)
+        return sample, meta_labels, target, path
