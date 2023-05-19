@@ -102,3 +102,25 @@ class UseMetaData(datasets.ImageFolder):
         target = self.label_df[self.label_df.file_name == filename].to_numpy()[0][1]
         target = int(target)
         return sample, meta_labels, target, path
+
+
+class UseMetaData_Sampletraining(datasets.ImageFolder):
+    """
+    Combined dataset for using metalabels with the ImageNet Dataset.
+    """
+
+    def __init__(self, folder_path, *args, **kwargs):
+        super().__init__(folder_path, *args, **kwargs)
+        
+    
+    # multilabel getitem method:
+    def __getitem__(self, index: int):
+        path, target = self.samples[index]
+        sample = self.loader(path)
+
+        if self.transform is not None:
+            sample = self.transform(sample)
+
+
+        return sample, target
+    

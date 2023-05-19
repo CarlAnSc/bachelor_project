@@ -28,7 +28,7 @@ def main(args):
         "train", args.path, annotation_path, transform=ValTransforms()
     )
     val_data = UseMetaData("val", args.path, annotation_path, transform=ValTransforms())
-
+    
     # Create data loaders
     number_of_classes = len(train_data.classes)
 
