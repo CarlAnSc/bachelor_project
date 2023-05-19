@@ -18,9 +18,6 @@ import random
 
 def main(args):
     # Define the PyTorch Lightning trainer
-    trainer = pl.Trainer(
-        accelerator="auto", max_epochs=args.epochs
-    )
 
     train_data = UseMetaData_Sampletraining(args.path, transform=ValTransforms())
     number_of_classes = len(train_data.classes)
@@ -60,9 +57,7 @@ def main(args):
         out = model(batch[0].to(device))
         _, index = torch.max(out, 1)
         print(index)
-        print(batch[2])
-        print(batch[3])
-        acc1 = accuracy(index, batch[2].to(device))
+        acc1 = accuracy(index, batch[1].to(device))
         #print(acc1)
         acc.append(acc1.cpu().detach().numpy())
 
