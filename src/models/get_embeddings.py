@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import csv
 import pickle
 import numpy as np
-from torchmetrics import Accuracy
+
 
 dotenvpath = find_dotenv()
 load_dotenv(dotenvpath)
