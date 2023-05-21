@@ -27,7 +27,7 @@ def main(args):
     train_data = UseMetaData(
         "train", args.path, annotation_path, transform=ValTransforms()
     )
-    train_subset, val_subset = torch.utils.data.random_split(train_data, [round(0.8*train_data.__len__()), round(0.2*train_data.__len__())], generator=torch.Generator())
+    train_subset, val_subset = torch.utils.data.random_split(train_data, [39094, 9774], generator=torch.Generator())
     
     # Create data loaders
     number_of_classes = len(train_data.classes)
