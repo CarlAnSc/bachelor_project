@@ -36,7 +36,6 @@ def main(args):
         train_subset,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        pin_memory=True,
         shuffle=True,
     )
 
@@ -44,7 +43,6 @@ def main(args):
         val_subset,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        pin_memory=True,
     )
 
     # Initialize the ResNet model
