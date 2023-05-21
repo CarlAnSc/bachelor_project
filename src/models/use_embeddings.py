@@ -1,4 +1,3 @@
-from tqdm.auto import tqdm
 import torchvision.models.resnet as resnet
 import torch
 import argparse
@@ -12,10 +11,11 @@ import xgboost as xgb
 from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from mlxtend.evaluate import mcnemar_table
 from mlxtend.evaluate import mcnemar
 
-classifier_dict = {'k-nearest': KNeighborsClassifier, 'logistic-regr': LogisticRegression, 'Xgb': xgb.XGBClassifier}
+classifier_dict = {'k-nearest': KNeighborsClassifier, 'logistic-regr': LogisticRegression, 'Xgb': xgb.XGBClassifier, 'svm': SVC}
 
 
 def test_classifier_fold(classifier, X_train_cat, y_train_cat, X_test_cat, y_test_cat, X_train_img, y_train_img, X_test_img, y_test_img):
