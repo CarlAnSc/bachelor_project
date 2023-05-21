@@ -64,7 +64,7 @@ def main(args):
     X = val_cat_data
 
     N_splits = 5
-    kf = KFold(n_splits=N_splits, shuffle=True)
+    kf = KFold(n_splits=N_splits, shuffle=True, random_state=42)
     kf.get_n_splits(X)
 
     print(kf)
@@ -87,18 +87,19 @@ def main(args):
                                 y_model1 = y_pred_cat,
                                 y_model2 = y_pred_img)
         M_table_cumm += M_table
-        chi2, p = mcnemar(ary=M_table, corrected=True)
+        chi2, p = mcnemar(ary=M_table, corrected=False)
         # append accuracies to df_acc
         df_acc.loc[i] = [acc_cat, acc_img, acc_cat- acc_img, p]
 
     print('------------Cummulated McNemar test------------')
-    CI, p_value = mcnemar(ary=M_table, corrected=True) 
+    CI, p_value = mcnemar(ary=M_table_cumm, corrected=False) 
     df_acc['Final CI'] = CI
     df_acc['Final p'] = p_value
+    print(df_acc)
     df_acc.to_csv(f'../../k-fold/{args.classifier}_mcnemar.csv')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Doing McNemartest for k-fold")
-    parser.add_argument("classifier", type=str, help="The type of classifier")
+    parser.add_argument("--classifier", type=str, help="The type of classifier")
     args = parser.parse_args()
     main(args)
