@@ -2,11 +2,13 @@ import argparse
 import torch
 import pytorch_lightning as pl
 import os
+import numpy as np
 from dotenv import load_dotenv, find_dotenv
 from torch.utils.data import DataLoader, RandomSampler
 from src.data.dataloader import UseMetaData, ValTransforms
 from src.models.ResNet50_use_meta import ResNet_withMeta
-
+from torch.utils.data.sampler import SubsetRandomSampler
+import pdb
 
 def main(args):
     dotenvpath = find_dotenv()
@@ -27,22 +29,33 @@ def main(args):
     train_data = UseMetaData(
         "train", args.path, annotation_path, transform=ValTransforms()
     )
-    train_subset, val_subset = torch.utils.data.random_split(train_data, [39094, 9774], generator=torch.Generator())
+    num_train = len(train_data)
+    indices = list(range(num_train))
+    split = int(np.floor(0.2 * num_train))
+    np.random.seed(args.seed)
+    np.random.shuffle(indices)
+
+    train_idx, val_idx = indices[split:], indices[:split]
+    
+    train_sampler = SubsetRandomSampler(train_idx)
+    val_sampler = SubsetRandomSampler(val_idx)
     
     # Create data loaders
     number_of_classes = len(train_data.classes)
-
     train_loader = DataLoader(
-        train_subset,
+        train_data,
+        sampler= train_sampler,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        shuffle=True,
+        pin_memory=True
     )
 
     val_loader = DataLoader(
-        val_subset,
+        train_data,
+        sampler= val_sampler,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
+        pin_memory=True
     )
 
     # Initialize the ResNet model
