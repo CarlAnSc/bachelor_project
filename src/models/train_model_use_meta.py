@@ -44,7 +44,7 @@ def main(args):
     number_of_classes = len(train_data.classes)
     train_loader = DataLoader(
         train_data,
-        sampler= train_sampler,
+        sampler = train_sampler,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=True
@@ -52,7 +52,7 @@ def main(args):
 
     val_loader = DataLoader(
         train_data,
-        sampler= val_sampler,
+        sampler = val_sampler,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=True
