@@ -31,7 +31,7 @@ class ResNet_withMeta(pl.LightningModule):
         # meta backbone version1
         # self.meta_backbone = nn.Linear(16, 16)
         # meta backbone version2
-        self.meta_backbonev2 = nn.Sequential(
+        self.meta_backbone = nn.Sequential(
             nn.Linear(16, 32),
             nn.ReLU(),
             nn.Linear(32, 32),
@@ -57,7 +57,7 @@ class ResNet_withMeta(pl.LightningModule):
     
     def forward(self, img, meta):
         features_img = self.img_backbone(img)  # [N, 2048]
-        features_meta = self.meta_backbonev2(meta)  # [N, n_features]
+        features_meta = self.meta_backbone(meta)  # [N, n_features]
         features = torch.cat((features_img, features_meta), 1)
         features = self.relu(features)
 
