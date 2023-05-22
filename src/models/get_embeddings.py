@@ -43,18 +43,18 @@ model = torch.hub.load(
                 weights="ResNet50_Weights.IMAGENET1K_V1",
             )
 
-# model.fc = torch.nn.Identity()
+model.fc = torch.nn.Identity()
 model.eval()
 device = torch.device('cuda')
 model.to(device)
 
 # Train
-# train_dict = {}
+train_dict = {}
 
-# for i, batch in enumerate(tqdm.tqdm(train_loader)):
-#     train_dict[i] = [model(batch[0].to(device)).cpu().detach().numpy(), batch[1].numpy(), batch[2].numpy()]
+for i, batch in enumerate(tqdm.tqdm(train_loader)):
+    train_dict[i] = [model(batch[0].to(device)).cpu().detach().numpy(), batch[1].numpy(), batch[2].numpy()]
 
-# pickle.dump(train_dict, open('/data/train_embeddings.pkl', 'wb'))
+pickle.dump(train_dict, open('/data/train_embeddings.pkl', 'wb'))
 
 # #Val
 # val_dict = {}
