@@ -61,8 +61,8 @@ def mcnemar_ML(Matrix, alpha=0.05):
 
 def test_classifier_fold(classifier, X_train_cat, y_train_cat, X_test_cat, y_test_cat, X_train_img, y_train_img, X_test_img, y_test_img):
 
-    clf_cat = classifier(verbose=True)
-    clf_img = classifier(verbose=True)
+    clf_cat = classifier()
+    clf_img = classifier()
 
     clf_cat.fit(X_train_cat, y_train_cat)
     clf_img.fit(X_train_img, y_train_img)
@@ -103,9 +103,15 @@ def main(args):
     val_cat_data = torch.cat([val_img_data, val_meta_data], 1).numpy()
     val_labels = torch.cat(val_labels, 0).numpy()
 
+    isPCA = ''
     if args.pca:
         filename = '../../data/embeddings_cat_PCA.pickle'
         val_cat_data = pickle.load(open(filename, 'rb'))
+        isPCA = 'PCA'
+    if args.pcaULTRA:
+        filename = '../../data/embeddings_cat_PCA-ULTRA.pickle'
+        val_cat_data = pickle.load(open(filename, 'rb'))
+        isPCA = 'PCAULTRA'
 
     X = val_cat_data
 
@@ -128,7 +134,7 @@ def main(args):
                                                                     y_train_img = val_labels[train_index],
                                                                     X_test_img = val_img_data[test_index],
                                                                         y_test_img = val_labels[test_index])
-        pd.DataFrame(zip(y_pred_img,y_pred_cat, val_labels[test_index]), columns=['base pred', 'meta pred', 'true label']).to_csv(f'../../k-fold/{args.classifier}-FOLD{i}.csv')
+        pd.DataFrame(zip(y_pred_img,y_pred_cat, val_labels[test_index]), columns=['base pred', 'meta pred', 'true label']).to_csv(f'../../k-fold/{args.classifier}_{isPCA}-FOLD{i}.csv')
         # Run a mcnemar test for the two classifiers
         M_table = mcnemar_table(y_target= val_labels[test_index],
                                 y_model1 = y_pred_img,
@@ -152,12 +158,14 @@ def main(args):
 
 
     print(df_acc)
-    df_acc.to_csv(f'../../k-fold/{args.classifier}_mcnemar.csv')
+    df_acc.to_csv(f'../../k-fold/{args.classifier}_mcnemar{isPCA}.csv')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Doing McNemartest for k-fold")
     parser.add_argument("--classifier", type=str, help="The type of classifier")
-    parser.add_argument("--pca", type=str, help="The type of classifier")
+    parser.add_argument("--pca", type=str, help="use pca data")
+    parser.add_argument("--pcaULTRA", type=str, help="use ultra small pca data")
+
 
     args = parser.parse_args()
     main(args)
