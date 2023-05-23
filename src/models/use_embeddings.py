@@ -18,6 +18,8 @@ from mlxtend.evaluate import mcnemar_table
 from mlxtend.evaluate import mcnemar
 import scipy.stats as st
 
+from time import time
+
 classifier_dict = {'k-nearest': KNeighborsClassifier, 'logistic-regr': LogisticRegression, 'Xgb': xgb.XGBClassifier, 'svc':  SVC, 'Lsvc': LinearSVC}
 
 
@@ -84,34 +86,45 @@ def main(args):
     CLASSIFIER = classifier_dict[args.classifier]
 
 
-    filename = '../../data/train_embeddings.pkl'
-    val_dict = pickle.load(open(filename, 'rb')) # De 50.000 billeder
-
-
-    val_img_data = []
-    val_meta_data = []
-    val_labels = []
-
-    for i in val_dict.keys():
-        val_img_data.append(torch.from_numpy(val_dict[i][0]))
-        val_meta_data.append(torch.from_numpy(val_dict[i][1]))
-        val_labels.append(torch.from_numpy(val_dict[i][2]))
-
-
-    val_img_data = torch.cat(val_img_data, 0).detach()
-    val_meta_data = torch.cat(val_meta_data, 0)
-    val_cat_data = torch.cat([val_img_data, val_meta_data], 1).numpy()
-    val_labels = torch.cat(val_labels, 0).numpy()
-
     isPCA = ''
     if args.pca:
-        filename = '../../data/embeddings_cat_PCA.pickle'
-        val_cat_data = pickle.load(open(filename, 'rb'))
+        print('ER I PCA')
+        filename = '../../data/embeddings_PCA.pickle'
+        dict = pickle.load(open(filename, 'rb'))
+        val_img_data = dict['img']
+        val_cat_data = dict['cat']
+        val_labels = dict['labels']
         isPCA = 'PCA'
+
     if args.pcaULTRA:
-        filename = '../../data/embeddings_cat_PCA-ULTRA.pickle'
-        val_cat_data = pickle.load(open(filename, 'rb'))
+        filename = '../../data/embeddings_PCA-ULTRA.pickle'
+        dict = pickle.load(open(filename, 'rb'))
+        val_img_data = dict['img']
+        val_cat_data = dict['cat']
+        val_labels = dict['labels']
         isPCA = 'PCAULTRA'
+
+    else: 
+        filename = '../../data/train_embeddings.pkl'
+        val_dict = pickle.load(open(filename, 'rb')) # De 50.000 billeder
+
+
+        val_img_data = []
+        val_meta_data = []
+        val_labels = []
+
+        for i in val_dict.keys():
+            val_img_data.append(torch.from_numpy(val_dict[i][0]))
+            val_meta_data.append(torch.from_numpy(val_dict[i][1]))
+            val_labels.append(torch.from_numpy(val_dict[i][2]))
+
+
+        val_img_data = torch.cat(val_img_data, 0).detach()
+        val_meta_data = torch.cat(val_meta_data, 0)
+        val_cat_data = torch.cat([val_img_data, val_meta_data], 1).numpy()
+        val_labels = torch.cat(val_labels, 0).numpy()
+    
+    startT = time()
 
     X = val_cat_data
 
@@ -144,6 +157,7 @@ def main(args):
         # append accuracies to df_acc
         df_acc.loc[i] = [acc_cat, acc_img, thetahat_1, str(CI_1), p_value_1]
 
+    slutT = time()
     print('------------Cummulated McNemar test------------')
     _, p_value_1 = mcnemar(ary=M_table_cumm, corrected=False)
     thetahat_2, CI_2, p_value_2 = mcnemar_ML(Matrix=M_table_cumm, alpha=0.05)
@@ -155,11 +169,12 @@ def main(args):
     df_acc['Final theta_2'] = thetahat_2
     df_acc['Final CI_2'] = str(CI_2)
     df_acc['Final p_2'] = p_value_2
-
+    
 
     print(df_acc)
     df_acc.to_csv(f'../../k-fold/{args.classifier}_mcnemar{isPCA}.csv')
 
+    print(f'-----------------------------{slutT-startT}--------------------------')
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Doing McNemartest for k-fold")
     parser.add_argument("--classifier", type=str, help="The type of classifier")
