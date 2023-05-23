@@ -16,8 +16,47 @@ from sklearn.svm import SVC
 
 from mlxtend.evaluate import mcnemar_table
 from mlxtend.evaluate import mcnemar
+import scipy.stats as st
 
 classifier_dict = {'k-nearest': KNeighborsClassifier, 'logistic-regr': LogisticRegression, 'Xgb': xgb.XGBClassifier, 'svc':  SVC, 'Lsvc': LinearSVC}
+
+
+def mcnemar_ML(Matrix, alpha=0.05):
+    """ Code from the toolBox from course 02450 (Introduction to Machine Learning and Data mining
+     However, it has been modified to fit the purpose of this project. """
+
+    # perform McNemars test
+
+    n = sum(Matrix.flat)
+    n12 = Matrix[0,1]
+    n21 = Matrix[1,0]
+
+    #thetahat = (n12-n21)/n
+    thetahat = (n21-n12)/n
+
+    Etheta = thetahat
+
+    Q = n**2 * (n+1) * (Etheta+1) * (1-Etheta) / ( (n*(n12+n21) - (n12-n21)**2) )
+    #Q = n**2 * (n+1) * (Etheta+1) * (1-Etheta) / ( (n*(n12+n21) - (n21-n12)**2) )
+
+    p = (Etheta + 1)*0.5 * (Q-1)
+    #p = (1-Etheta)*0.5 * (Q-1)
+    q = (1-Etheta)*0.5 * (Q-1)
+    #q = (Etheta + 1)*0.5 * (Q-1)
+
+    CI = tuple(lm * 2 - 1 for lm in st.beta.interval(1-alpha, a=p, b=q) )
+
+    p = 2*st.binom.cdf(min([n12,n21]), n=n12+n21, p=0.5)
+    print("Result of McNemars test using alpha=", alpha)
+    print("Comparison matrix n")
+    print(Matrix)
+    if n12+n21 <= 10:
+        print("Warning, n12+n21 is low: n12+n21=",(n12+n21))
+
+    print(f"Approximate 1-alpha confidence interval of theta: [thetaL,thetaU] ={CI}")
+    print(f"p-value for two-sided test A and B have same accuracy (exact binomial test): p={p}")
+
+    return thetahat, CI, p
 
 
 def test_classifier_fold(classifier, X_train_cat, y_train_cat, X_test_cat, y_test_cat, X_train_img, y_train_img, X_test_img, y_test_img):
@@ -71,7 +110,7 @@ def main(args):
 
     print(kf)
 
-    df_acc = pd.DataFrame(columns=['Using Meta', 'Just images', 'Delta', 'McNemar p-value'])
+    df_acc = pd.DataFrame(columns=['Using Meta', 'Just Images', 'Delta', 'McNemar p-value'])
     M_table_cumm = np.zeros((2,2))
     for i, (train_index, test_index) in enumerate(kf.split(X)):
         print(f"Fold {i + 1}:")
@@ -84,19 +123,29 @@ def main(args):
                                                                     y_train_img = val_labels[train_index],
                                                                     X_test_img = val_img_data[test_index],
                                                                         y_test_img = val_labels[test_index])
+        pd.DataFrame(zip(y_pred_img,y_pred_cat, val_labels[test_index]), columns=['base pred', 'meta pred', 'true label']).to_csv(f'../../k-fold/{args.classifier}-FOLD{i}.csv')
         # Run a mcnemar test for the two classifiers
         M_table = mcnemar_table(y_target= val_labels[test_index],
-                                y_model1 = y_pred_cat,
-                                y_model2 = y_pred_img)
+                                y_model1 = y_pred_img,
+                                y_model2 = y_pred_cat)
         M_table_cumm += M_table
         chi2, p = mcnemar(ary=M_table, corrected=False)
         # append accuracies to df_acc
         df_acc.loc[i] = [acc_cat, acc_img, acc_cat- acc_img, p]
 
     print('------------Cummulated McNemar test------------')
-    CI, p_value = mcnemar(ary=M_table_cumm, corrected=False) 
-    df_acc['Final CI'] = CI
-    df_acc['Final p'] = p_value
+    _, p_value_1 = mcnemar(ary=M_table_cumm, corrected=False)
+    thetahat_2, CI_2, p_value_2 = mcnemar_ML(Matrix=M_table_cumm, alpha=0.05)
+
+    df_acc['Final acc_using_meta'] = df_acc['Using Meta'].mean()
+    df_acc['Final acc_just_images'] = df_acc['Just Images'].mean()
+
+    df_acc['Final p_1'] = p_value_1
+    df_acc['Final theta_2'] = thetahat_2
+    df_acc['Final CI_2'] = str(CI_2)
+    df_acc['Final p_2'] = p_value_2
+
+
     print(df_acc)
     df_acc.to_csv(f'../../k-fold/{args.classifier}_mcnemar.csv')
 
