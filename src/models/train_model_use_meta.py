@@ -10,25 +10,26 @@ from src.models.ResNet50_use_meta import ResNet_withMeta
 from torch.utils.data.sampler import SubsetRandomSampler
 import pdb
 
+
 def main(args):
-    
     dotenvpath = find_dotenv()
     load_dotenv(dotenvpath)
     os.environ["WANDB_API_KEY"] = os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
-    torch.set_float32_matmul_precision('medium')
+    torch.set_float32_matmul_precision("medium")
 
     # Log experiment with WandB
     wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
     wandb_logger.experiment.config.update(args)
     # Define the PyTorch Lightning trainer
-    model_checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        monitor="val_acc1", mode="max"
-    )
+    model_checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath="checkpoints/")
     trainer = pl.Trainer(
-        accelerator="auto", max_epochs=args.epochs, logger=wandb_logger, callbacks=[model_checkpoint_callback]
+        accelerator="auto",
+        max_epochs=args.epochs,
+        logger=wandb_logger,
+        callbacks=[model_checkpoint_callback],
     )
     annotation_path = "bachelor_project/data/annotations/"
     train_data = UseMetaData(
@@ -43,26 +44,26 @@ def main(args):
     print(split)
 
     train_idx, val_idx = indices[split:], indices[:split]
-    
+
     train_sampler = SubsetRandomSampler(train_idx)
     val_sampler = SubsetRandomSampler(val_idx)
-    
+
     # Create data loaders
     number_of_classes = len(train_data.classes)
     train_loader = DataLoader(
         train_data,
-        sampler = train_sampler,
+        sampler=train_sampler,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        pin_memory=True
+        pin_memory=True,
     )
 
     val_loader = DataLoader(
         train_data,
-        sampler = val_sampler,
+        sampler=val_sampler,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        pin_memory=True
+        pin_memory=True,
     )
 
     # Initialize the ResNet model
@@ -95,6 +96,6 @@ if __name__ == "__main__":
         default=0.9,
     )
     parser.add_argument("--freeze", type=bool, help="Freeze layers", default=False)
-    
+
     args = parser.parse_args()
     main(args)
