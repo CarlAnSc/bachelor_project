@@ -110,7 +110,7 @@ def main(args):
 
     print(kf)
 
-    df_acc = pd.DataFrame(columns=['Using Meta', 'Just Images', 'Delta', 'McNemar p-value'])
+    df_acc = pd.DataFrame(columns=['Using Meta', 'Just Images', 'Delta', 'Conf' , 'McNemar p-value'])
     M_table_cumm = np.zeros((2,2))
     for i, (train_index, test_index) in enumerate(kf.split(X)):
         print(f"Fold {i + 1}:")
@@ -129,9 +129,9 @@ def main(args):
                                 y_model1 = y_pred_img,
                                 y_model2 = y_pred_cat)
         M_table_cumm += M_table
-        chi2, p = mcnemar(ary=M_table, corrected=False)
+        thetahat_1, CI_1, p_value_1 = mcnemar_ML(Matrix=M_table,  alpha=0.05)
         # append accuracies to df_acc
-        df_acc.loc[i] = [acc_cat, acc_img, acc_cat- acc_img, p]
+        df_acc.loc[i] = [acc_cat, acc_img, thetahat_1, str(CI_1), p_value_1]
 
     print('------------Cummulated McNemar test------------')
     _, p_value_1 = mcnemar(ary=M_table_cumm, corrected=False)
