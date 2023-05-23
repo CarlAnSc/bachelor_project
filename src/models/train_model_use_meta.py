@@ -11,19 +11,24 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import pdb
 
 def main(args):
+    
     dotenvpath = find_dotenv()
     load_dotenv(dotenvpath)
     os.environ["WANDB_API_KEY"] = os.getenv("WANDB_API_KEY")
     # Set seed
     torch.manual_seed(args.seed)
+    torch.set_float32_matmul_precision('medium')
 
     # Log experiment with WandB
     wandb_logger = pl.loggers.WandbLogger(project="bachelor-juca")
     # Set args:
     wandb_logger.experiment.config.update(args)
     # Define the PyTorch Lightning trainer
+    model_checkpoint_callback = pl.callbacks.ModelCheckpoint(
+        monitor="val_acc1", mode="max"
+    )
     trainer = pl.Trainer(
-        accelerator="auto", max_epochs=args.epochs, logger=wandb_logger
+        accelerator="auto", max_epochs=args.epochs, logger=wandb_logger, callbacks=[model_checkpoint_callback]
     )
     annotation_path = "bachelor_project/data/annotations/"
     train_data = UseMetaData(
@@ -34,6 +39,8 @@ def main(args):
     split = int(np.floor(0.2 * num_train))
     np.random.seed(args.seed)
     np.random.shuffle(indices)
+    print(num_train)
+    print(split)
 
     train_idx, val_idx = indices[split:], indices[:split]
     

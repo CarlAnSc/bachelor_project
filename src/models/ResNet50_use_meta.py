@@ -29,16 +29,16 @@ class ResNet_withMeta(pl.LightningModule):
         self.img_backbone.fc = nn.Identity()
 
         # meta backbone version1
-        self.meta_backbone = nn.Linear(16, 16)
+        # self.meta_backbone = nn.Linear(16, 16)
         # meta backbone version2
-        # self.meta_backbone = nn.Sequential(
-        #     nn.Linear(16, 32),
-        #     nn.ReLU(),
-        #     nn.Linear(32, 32),
-        #     nn.ReLU(),
-        #     nn.Linear(32, 16),
-        #     nn.ReLU()
-        # )
+        self.meta_backbone = nn.Sequential(
+            nn.Linear(16, 32),
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU()
+        )
 
         self.relu = nn.ReLU()
 
