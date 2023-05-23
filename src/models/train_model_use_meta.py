@@ -24,7 +24,9 @@ def main(args):
     # Set args:
     wandb_logger.experiment.config.update(args)
     # Define the PyTorch Lightning trainer
-    model_checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath="checkpoints/")
+    model_checkpoint_callback = pl.callbacks.ModelCheckpoint(
+        monitor="val_acc1", mode="max", dirpath="checkpoints1/"
+    )
     trainer = pl.Trainer(
         accelerator="auto",
         max_epochs=args.epochs,
