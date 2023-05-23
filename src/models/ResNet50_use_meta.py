@@ -20,12 +20,12 @@ class ResNet_withMeta(pl.LightningModule):
             "resnet50",
             weights="ResNet50_Weights.IMAGENET1K_V1",
         )
-        #Freeze parameters if freeze flag in args
+        # Freeze parameters if freeze flag in args
         if self.args.freeze:
             for param in self.img_backbone.parameters():
                 param.requires_grad = False
 
-        #final layer of img backbone        
+        # final layer of img backbone
         self.img_backbone.fc = nn.Identity()
 
         # meta backbone version1
@@ -37,14 +37,14 @@ class ResNet_withMeta(pl.LightningModule):
             nn.Linear(32, 32),
             nn.ReLU(),
             nn.Linear(32, 16),
-            nn.ReLU()
+            nn.ReLU(),
         )
 
         self.relu = nn.ReLU()
 
-        #final linear layer
+        # final linear layer
         self.classifier = nn.Linear(2048 + 16, num_classes)
-        
+
         self.accuracy1 = torchmetrics.Accuracy(
             task="multiclass", num_classes=num_classes
         )
@@ -52,9 +52,9 @@ class ResNet_withMeta(pl.LightningModule):
             task="multiclass", num_classes=num_classes, top_k=3
         )
         self.f1_score = torchmetrics.F1Score(
-            task="multiclass", num_classes=num_classes, average="micro"
+            task="multiclass", num_classes=num_classes, average="macro"
         )
-    
+
     def forward(self, img, meta):
         features_img = self.img_backbone(img)  # [N, 2048]
         features_meta = self.meta_backbone(meta)  # [N, n_features]
@@ -108,8 +108,8 @@ class ResNet_withMeta(pl.LightningModule):
             ),
         }
         optimizer = dictOptimizer[self.args.optimizer]
-        
+
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=self.args.epochs
-        )  
+        )
         return [optimizer], [scheduler]
