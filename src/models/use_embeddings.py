@@ -61,8 +61,8 @@ def mcnemar_ML(Matrix, alpha=0.05):
 
 def test_classifier_fold(classifier, X_train_cat, y_train_cat, X_test_cat, y_test_cat, X_train_img, y_train_img, X_test_img, y_test_img):
 
-    clf_cat = classifier()
-    clf_img = classifier()
+    clf_cat = classifier(verbose=True)
+    clf_img = classifier(verbose=True)
 
     clf_cat.fit(X_train_cat, y_train_cat)
     clf_img.fit(X_train_img, y_train_img)
@@ -83,7 +83,9 @@ def main(args):
 
     CLASSIFIER = classifier_dict[args.classifier]
 
-    val_dict = pickle.load(open('../../data/train_embeddings.pkl', 'rb')) # De 50.000 billeder
+
+    filename = '../../data/train_embeddings.pkl'
+    val_dict = pickle.load(open(filename, 'rb')) # De 50.000 billeder
 
 
     val_img_data = []
@@ -101,6 +103,9 @@ def main(args):
     val_cat_data = torch.cat([val_img_data, val_meta_data], 1).numpy()
     val_labels = torch.cat(val_labels, 0).numpy()
 
+    if args.pca:
+        filename = '../../data/embeddings_cat_PCA.pickle'
+        val_cat_data = pickle.load(open(filename, 'rb'))
 
     X = val_cat_data
 
@@ -152,5 +157,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Doing McNemartest for k-fold")
     parser.add_argument("--classifier", type=str, help="The type of classifier")
+    parser.add_argument("--pca", type=str, help="The type of classifier")
+
     args = parser.parse_args()
     main(args)
