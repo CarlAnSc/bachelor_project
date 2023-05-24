@@ -98,6 +98,7 @@ class ResNet_withMeta(pl.LightningModule):
             ),
             "sgd": torch.optim.SGD(
                 chain(
+                    self.img_backbone.parameters(),
                     self.img_backbone.fc.parameters(),
                     self.classifier.parameters(),
                     self.meta_backbone.parameters(),
