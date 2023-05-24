@@ -1,16 +1,12 @@
 # LSBATCH: User input
 #!/bin/sh
 ### General options
-### –- specify queue --
-#BSUB -q gpua100
 ### -- set the job Name --
 #BSUB -J train-JuCa
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 16
-### -- Select the resources: 1 gpu in exclusive process mode --
-#BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 0:30
+#BSUB -W 16:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=4GB]"
 ### -- set the email address --
@@ -30,5 +26,6 @@
 # Load the cuda module
 module load cuda/11.7
 # Which python
+cd src/models/
 ~/miniconda3/envs/hpc_env/bin/python \
-src/models/use_embeddings.py --classifier k-nearest #logistic-regr #Xgb
+use_embeddings.py --classifier Xgb --tsne yea #logistic-regr #Xgb
