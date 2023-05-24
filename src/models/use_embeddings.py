@@ -89,7 +89,6 @@ def main(args):
 
     isPCA = ''
     if args.pca:
-        print('ER I PCA')
         filename = '../../data/embeddings_PCA.pickle'
         dict = pickle.load(open(filename, 'rb'))
         val_img_data = dict['img']
