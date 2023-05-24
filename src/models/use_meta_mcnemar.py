@@ -5,7 +5,6 @@ from mlxtend.evaluate import mcnemar_table
 from mlxtend.evaluate import mcnemar
 import scipy.stats as st
 
-
 def mcnemar_ML(Matrix, alpha=0.05):
     """Code from the toolBox from course 02450 (Introduction to Machine Learning and Data mining
     However, it has been modified to fit the purpose of this project."""
