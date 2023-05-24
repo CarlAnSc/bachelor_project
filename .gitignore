@@ -141,6 +141,9 @@ k-fold/
 .DS_store	
 **/.DS_Store
 
+#Linux shit
+Miniconda3-latest-Linux-x86_64.sh
+
 #Models
 models/*
 checkpoints/*
