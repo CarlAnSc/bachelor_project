@@ -11,6 +11,7 @@ import xgboost as xgb
 from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 
@@ -20,7 +21,7 @@ import scipy.stats as st
 
 from time import time
 
-classifier_dict = {'k-nearest': KNeighborsClassifier, 'logistic-regr': LogisticRegression, 'Xgb': xgb.XGBClassifier, 'svc':  SVC, 'Lsvc': LinearSVC}
+classifier_dict = {'k-nearest': KNeighborsClassifier, 'logistic-regr': LogisticRegression, 'Xgb': xgb.XGBClassifier, 'rfc': RandomForestClassifier , 'svc':  SVC, 'Lsvc': LinearSVC}
 
 
 def mcnemar_ML(Matrix, alpha=0.05):
@@ -103,6 +104,14 @@ def main(args):
         val_cat_data = dict['cat']
         val_labels = dict['labels']
         isPCA = 'PCAULTRA'
+    
+    if args.tsne:
+        filename = '../../data/embeddings_TSNE.pickle'
+        dict = pickle.load(open(filename, 'rb'))
+        val_img_data = dict['img']
+        val_cat_data = dict['cat']
+        val_labels = dict['labels']
+        isPCA = 'TSNE'
 
     else: 
         filename = '../../data/train_embeddings.pkl'
@@ -180,6 +189,8 @@ if __name__ == "__main__":
     parser.add_argument("--classifier", type=str, help="The type of classifier")
     parser.add_argument("--pca", type=str, help="use pca data")
     parser.add_argument("--pcaULTRA", type=str, help="use ultra small pca data")
+    parser.add_argument("--tsne", type=str, help="use tsne data")
+
 
 
     args = parser.parse_args()
