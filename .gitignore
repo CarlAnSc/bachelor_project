@@ -148,3 +148,4 @@ checkpoints/*
 wandb/*
 hpc_jobs/job_output/*
 hpc_jobs/
+final_mcnemar/
