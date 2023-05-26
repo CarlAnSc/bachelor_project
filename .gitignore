@@ -135,7 +135,6 @@ dmypy.json
 # data
 data/*
 !data/annotations/
-k-fold/
 
 #MacOSX shit
 .DS_store	

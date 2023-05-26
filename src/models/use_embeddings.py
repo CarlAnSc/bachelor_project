@@ -145,25 +145,27 @@ def main(args):
     df_acc = pd.DataFrame(columns=['Using Meta', 'Just Images', 'Delta', 'Conf' , 'McNemar p-value'])
     M_table_cumm = np.zeros((2,2))
     for i, (train_index, test_index) in enumerate(kf.split(X)):
-        print(f"Fold {i + 1}:")
-        _,_, y_pred_cat, y_pred_img, acc_cat, acc_img = test_classifier_fold(classifier=CLASSIFIER,
-                                                        X_train_cat = val_cat_data[train_index],
-                                                            y_train_cat = val_labels[train_index],
-                                                            X_test_cat = val_cat_data[test_index],
-                                                                y_test_cat = val_labels[test_index], 
-                                                                X_train_img = val_img_data[train_index],
-                                                                    y_train_img = val_labels[train_index],
-                                                                    X_test_img = val_img_data[test_index],
-                                                                        y_test_img = val_labels[test_index])
-        pd.DataFrame(zip(y_pred_img,y_pred_cat, val_labels[test_index]), columns=['base pred', 'meta pred', 'true label']).to_csv(f'../../k-fold/{args.classifier}_{isPCA}-FOLD{i}.csv')
-        # Run a mcnemar test for the two classifiers
-        M_table = mcnemar_table(y_target= val_labels[test_index],
-                                y_model1 = y_pred_img,
-                                y_model2 = y_pred_cat)
-        M_table_cumm += M_table
-        thetahat_1, CI_1, p_value_1 = mcnemar_ML(Matrix=M_table,  alpha=0.05)
-        # append accuracies to df_acc
-        df_acc.loc[i] = [acc_cat, acc_img, thetahat_1, str(CI_1), p_value_1]
+        if i == 4:
+
+            print(f"Fold {i + 1}:")
+            _,_, y_pred_cat, y_pred_img, acc_cat, acc_img = test_classifier_fold(classifier=CLASSIFIER,
+                                                            X_train_cat = val_cat_data[train_index],
+                                                                y_train_cat = val_labels[train_index],
+                                                                X_test_cat = val_cat_data[test_index],
+                                                                    y_test_cat = val_labels[test_index], 
+                                                                    X_train_img = val_img_data[train_index],
+                                                                        y_train_img = val_labels[train_index],
+                                                                        X_test_img = val_img_data[test_index],
+                                                                            y_test_img = val_labels[test_index])
+            pd.DataFrame(zip(y_pred_img,y_pred_cat, val_labels[test_index]), columns=['base pred', 'meta pred', 'true label']).to_csv(f'../../k-fold/{args.classifier}_{isPCA}-FOLD{i}.csv')
+            # Run a mcnemar test for the two classifiers
+            M_table = mcnemar_table(y_target= val_labels[test_index],
+                                    y_model1 = y_pred_img,
+                                    y_model2 = y_pred_cat)
+            M_table_cumm += M_table
+            thetahat_1, CI_1, p_value_1 = mcnemar_ML(Matrix=M_table,  alpha=0.05)
+            # append accuracies to df_acc
+            df_acc.loc[i] = [acc_cat, acc_img, thetahat_1, str(CI_1), p_value_1]
 
     slutT = time()
     print('------------Cummulated McNemar test------------')
