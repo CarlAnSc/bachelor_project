@@ -12,25 +12,29 @@ import numpy as np
 import torchvision
 import random
 import pdb
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as mtick
 
 
 def main(args):
-# Define the PyTorch Lightning trainer
+    # Define the PyTorch Lightning trainer
     model = torch.hub.load(
-                "pytorch/vision:v0.9.0",
-                "resnet50",
-                weights="ResNet50_Weights.IMAGENET1K_V1",
-            )
+        "pytorch/vision:v0.9.0",
+        "resnet50",
+        weights="ResNet50_Weights.IMAGENET1K_V1",
+    )
 
-# model.fc = torch.nn.Identity()
+    # model.fc = torch.nn.Identity()
     model.eval()
-    device = torch.device('cuda')
+    device = torch.device("cuda")
     model.to(device)
 
-    accuracy = Accuracy('multiclass', num_classes=1000).to(device)
+    accuracy = Accuracy("multiclass", num_classes=1000).to(device)
 
     train_data = UseMetaData_Sampletraining(args.path, transform=ValTransforms())
-    
+
     number_of_classes = len(train_data.classes)
 
     train_loader = DataLoader(
@@ -40,12 +44,14 @@ def main(args):
     )
     N_dataset = len(train_loader.dataset)
     mean_accs = []
-    
-    for i in range(10):
-        randomlist = random.sample(range(1, N_dataset), 9000)
+
+    for i in range(100):
+        print(f"Iteration {i}")
+        randomlist = random.sample(range(1, N_dataset), 12000)
         trainset_1 = torch.utils.data.Subset(train_data, randomlist)
-        trainloader_1 = torch.utils.data.DataLoader(trainset_1, batch_size=16,
-                                                num_workers=8)
+        trainloader_1 = torch.utils.data.DataLoader(
+            trainset_1, batch_size=32, num_workers=8
+        )
         acc = []
         for i, batch in enumerate(tqdm(trainloader_1)):
             out = model(batch[0].to(device))
@@ -56,7 +62,7 @@ def main(args):
         print(np.mean(acc))
         mean_accs.append(np.mean(acc))
 
-    np.array(mean_accs).tofile('mean_accs.txt', sep=',')
+    np.array(mean_accs).tofile("mean_accs.txt", sep=",")
     # Evaluate the model on the test set
     # trainer.test(resnet_model, test_loader)
 
@@ -64,6 +70,20 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Training of model for hpc and local")
     parser.add_argument("--path", type=str, help="Path of ImageNet data")
-    
+
     args = parser.parse_args()
     main(args)
+    import pandas as pd
+
+    arr_nx = np.loadtxt("../../data/mean_accs_train_imgnx.txt", delimiter=",")
+    arr_base = np.loadtxt("../../data/mean_accs_train_normal.txt", delimiter=",")
+
+    means = [np.mean(arr_nx), np.mean(arr_base)]
+
+    stds = [np.std(arr_nx), np.std(arr_base)]
+
+    var = [np.var(arr_nx), np.var(arr_base)]
+
+    print(means)
+    print(stds)
+    print(var)

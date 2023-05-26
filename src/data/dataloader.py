@@ -63,7 +63,7 @@ class MultiLabel(datasets.ImageFolder):
         target = target.astype(float)
         target = torch.from_numpy(target)
         return sample, target
-    
+
 
 class UseMetaData(datasets.ImageFolder):
     """
@@ -111,8 +111,7 @@ class UseMetaData_Sampletraining(datasets.ImageFolder):
 
     def __init__(self, folder_path, *args, **kwargs):
         super().__init__(folder_path, *args, **kwargs)
-        
-    
+
     # multilabel getitem method:
     def __getitem__(self, index: int):
         path, target = self.samples[index]
@@ -121,6 +120,4 @@ class UseMetaData_Sampletraining(datasets.ImageFolder):
         if self.transform is not None:
             sample = self.transform(sample)
 
-
         return sample, target
-    
