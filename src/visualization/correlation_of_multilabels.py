@@ -23,8 +23,13 @@ Corr = df_all.corr()
 mask1 = Corr.abs() < 0.1
 mask2 = np.triu(np.ones_like(Corr, dtype=bool))
 mask = mask1 | mask2
-cmap = sns.diverging_palette(230, 20, as_cmap=True)
-sns.heatmap(Corr, annot=False, fmt='.2f', cmap=cmap, vmin=0.0, vmax=0.4, center=0, square=False, linewidths=.5, cbar_kws={"shrink": .5}, mask=mask2)
+
+
+cmap = sns.diverging_palette(240, 150, as_cmap=True)
+
+
+sns.heatmap(Corr, annot=False, fmt='.2f', cmap=cmap, vmin=0.0, vmax=0.4,
+             center=0, square=False, linewidths=.5, cbar_kws={"shrink": .5}, mask=mask2)
 plt.tight_layout()
 plt.xticks(rotation=90) 
 plt.savefig('../../figures/correlation_multilabels.png', bbox_inches= 'tight')

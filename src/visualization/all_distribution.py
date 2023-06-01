@@ -29,7 +29,7 @@ for i,ax in enumerate(axs):
     ax = dfko.loc[cate[i]].plot.bar(ax=ax,color=[colors[0],colors[1], colors[2], colors[3]],width=0.7,rot=20,legend=False)
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(), )
     
-fig.legend(['Training set multifactor','Validation set multifactor', 'Traning set top factor', 'Validation set top factor'], loc=9, ncol = 2)
+fig.legend(['Validation set multifactor','Training set multifactor', 'Validation set top factor','Traning set top factor'], loc=9, ncol = 2)
 
 
 #ax[0].yaxis.set_major_formatter(mtick.PercentFormatter())

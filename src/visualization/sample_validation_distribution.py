@@ -2,9 +2,9 @@ import matplotlib.ticker as mtick
 import pandas as pd
 import matplotlib.pyplot as plt
 
-all = pd.read_csv('../../Data_Analysis/val_imgs_df.csv')
+all = pd.read_csv('../../metalabel_objectivity/val_imgs_df.csv')
 N = len(all)
-valimg = pd.read_csv('../../Data_Analysis/df_30img_samples.csv')
+valimg = pd.read_csv('../../metalabel_objectivity/df_30img_samples.csv')
 
 #Inspired by plots.factor_distribution_comparison()
 dfAll = (all.iloc[:,1:17]*100/N).sum()
@@ -19,7 +19,7 @@ cate =  [['pose', 'background', 'pattern', 'color'], [ 'smaller', 'shape', 'part
 for i,ax in enumerate(axs):
     print(cate[i])
     dfko.index = dfko.index.str.replace('_', ' ')
-    ax = dfko.loc[cate[i]].plot.bar(ax=ax,color=[colors[1],colors[4]],width=0.7,rot=20,legend=False)
+    ax = dfko.loc[cate[i]].plot.bar(ax=ax,color=[colors[0],colors[1]],width=0.7,rot=20,legend=False)
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(), )
     
 fig.legend(['Full ImageNet-X validation set','30 randomly selected images for labeling'], loc=9, ncol = 2)

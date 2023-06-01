@@ -112,6 +112,6 @@ if __name__ == '__main__':
 
     df_metalabels = pd.DataFrame(meta_label_ready,columns=['multiple objects','background','color','brighter','darker','style','larger','smaller','object blocking','person blocking','partial view','pattern','pose','shape','subcategory','texture'])
 
-    for name in ['knn', 'log', 'svc', 'rfc', 'Lsvc']:
+    for name in ['xgb']: #['knn', 'log', 'svc', 'rfc', 'Lsvc']:
         df_ratios,signi= ratio_of_occurence('../../k-fold/df{}.csv'.format(name))
         make_plot(df_ratios, name, signi)
