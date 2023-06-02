@@ -106,7 +106,7 @@ class UseMetaData(datasets.ImageFolder):
 
 class UseMetaData_Sampletraining(datasets.ImageFolder):
     """
-    Combined dataset for using metalabels with the ImageNet Dataset.
+    Combined dataset for testing the 12k samples in imageNet-x
     """
 
     def __init__(self, folder_path, *args, **kwargs):
