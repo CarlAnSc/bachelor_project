@@ -14,7 +14,6 @@ from tqdm import tqdm
 
 
 def main(args):
-
     if args.evaluate:
         dotenvpath = find_dotenv()
         load_dotenv(dotenvpath)
@@ -54,17 +53,22 @@ def main(args):
             sampler=val_sampler,
             batch_size=args.batch_size,
             num_workers=args.num_workers,
-
         )
 
         resnet_model_base = torch.hub.load(
-                "pytorch/vision:v0.9.0",
-                "resnet50",
-                weights="ResNet50_Weights.IMAGENET1K_V1",
-            )
-        resnet_trained = ResNet_withMeta(args, num_classes=number_of_classes).load_from_checkpoint('bachelor_project/checkpoints/epoch=45-step=28106.ckpt', args=args, num_classes=number_of_classes)
+            "pytorch/vision:v0.9.0",
+            "resnet50",
+            weights="ResNet50_Weights.IMAGENET1K_V1",
+        )
+        resnet_trained = ResNet_withMeta(
+            args, num_classes=number_of_classes
+        ).load_from_checkpoint(
+            "bachelor_project/checkpoints/epoch=45-step=28106.ckpt",
+            args=args,
+            num_classes=number_of_classes,
+        )
 
-        device = 'cuda'
+        device = "cuda"
         resnet_model_base.eval()
         resnet_trained.eval()
         resnet_model_base.to(device)
@@ -78,24 +82,21 @@ def main(args):
             out_base = resnet_model_base(batch[0].to(device))
             _, preds_base = torch.max(out_base, 1)
             base_preds.append(preds_base.cpu().detach().numpy()[0])
-            
+
             out_trained = resnet_trained(batch[0].to(device), batch[1].to(device))
             _, preds_trained = torch.max(out_trained, 1)
             trained_preds.append(preds_trained.cpu().detach().numpy()[0])
-            
-            truth.append(batch[2].numpy()[0])
 
+            truth.append(batch[2].numpy()[0])
 
         base = base_preds
         trained = trained_preds
         truth = truth
 
         df = pd.DataFrame([base, trained, truth]).T
-        df.columns = ['base', 'trained', 'truth']
+        df.columns = ["base", "trained", "truth"]
         print(df)
-        df.to_csv('resnet_preds.csv', index=False)
-
-
+        df.to_csv("results/use_metalabels_resnet/resnet_preds.csv", index=False)
 
 
 if __name__ == "__main__":
@@ -122,7 +123,9 @@ if __name__ == "__main__":
         default=0.9,
     )
     parser.add_argument("--freeze", type=bool, help="Freeze layers", default=False)
-    parser.add_argument('--evaluate', type=bool, help='Set models to evaluate', default=True)
+    parser.add_argument(
+        "--evaluate", type=bool, help="Set models to evaluate", default=True
+    )
 
     args = parser.parse_args()
     main(args)
