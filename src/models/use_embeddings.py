@@ -212,7 +212,7 @@ def main(args):
 
     print(df_acc)
     df_acc.to_csv(
-        f"results/use_metalabels_kfold/folds/{args.classifier}_mcnemar{isPCA}.csv"
+        f"results/use_metalabels_kfold/{args.classifier}_mcnemar{isPCA}.csv"
     )
 
     print(f"-----------------------------{slutT-startT}--------------------------")
