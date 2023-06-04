@@ -3,14 +3,21 @@ import pandas as pd
 import os
 import shutil
 import argparse
-import tqdm
+import torch
 
 
-def main(args):
+def TopFactor_dataset(args):
+    """
+    This script creates the TopFactor dataset, and the MetalabelIntegration dataset.
+    Inputs needed are the imagenet_train_path, imagenet_val_path, and output_path.
+    The train path should contain all 1000 classes, and the val path should contain the 50000 images from the ImageNet validation set.
+    """
+    print("Creating TopFactor dataset")
     annotations_path = "data/annotations/"
     train_root = args.imagenet_train_path
     val_root = args.imagenet_val_path
-    output = "data/test/"
+    output = args.output_path
+
     val_annotations_top = pd.read_json(
         annotations_path + "imagenet_x_val_top_factor.jsonl", lines=True
     )
@@ -98,6 +105,47 @@ def main(args):
         shutil.copy(src, dest)
 
 
+def MetaLabelIntegration_dataset(args):
+    print("Creating MetalabelIntegration dataset")
+    annotations_path = "data/annotations/"
+    train_root = args.imagenet_train_path
+    val_root = args.imagenet_val_path
+    output = args.output_path
+    val_wnids = torch.load(annotations_path + "meta.bin")[1]
+
+    val_images = sorted(os.path.join(val_root, image) for image in os.listdir(val_root))
+    for wnid in set(val_wnids):
+        os.makedirs(os.path.join(output, "MetalabelIntegration", "train", wnid))
+        os.makedirs(os.path.join(output, "MetalabelIntegration", "val_not_used", wnid))
+
+    output = os.path.join(output, "MetalabelIntegration")
+
+    val_annotations_top = pd.read_json(
+        annotations_path + "imagenet_x_val_top_factor.jsonl", lines=True
+    )
+    train_annotations_top = pd.read_json(
+        annotations_path + "imagenet_x_train_top_factor.jsonl", lines=True
+    )
+
+    print("Copying MetalabelIntegration Train images")
+    for wnid, img in zip(val_wnids, val_images):
+        if os.path.basename(img) in val_annotations_top["file_name"].values:
+            shutil.copy(img, os.path.join(output, "train", wnid, os.path.basename(img)))
+
+    print("Copying MetalabelIntegration Val images")
+    for _, row in train_annotations_top.iterrows():
+        wnid = row["file_name"].split("_")[0]
+        img = os.path.join(train_root, wnid, row["file_name"])
+        shutil.copy(
+            img, os.path.join(output, "val_not_used", wnid, os.path.basename(img))
+        )
+
+
+def main(args):
+    TopFactor_dataset(args)
+    MetaLabelIntegration_dataset(args)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Setup data for this bachelor project")
     parser.add_argument(
@@ -112,6 +160,11 @@ if __name__ == "__main__":
         help="Path to folder containing raw ImageNet train data in 1000 folders",
         default="none",
     )
-
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        help="Path to folder where datasets should be placed",
+        default="data",
+    )
     args = parser.parse_args()
     main(args)

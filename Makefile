@@ -38,7 +38,7 @@ docker_build_app:
 		.
 ## Tag latest
 docker_tag_app:
-	docker tag bach_app gcr.io/ageless-accord-377810/bach_app
+	docker tag bach_app gcr.io/$(GCP_PROJECT)/bach_app
 
 ## Push to GCP
 docker_push_app:
